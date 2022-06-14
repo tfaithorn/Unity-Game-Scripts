@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xmlns="UnityEngine.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+    <VisualElement name="body">
+        <Label class="header" name="header"/>
+        <VisualElement name="form-container" class="form-container">
+            <VisualElement name="languages-section" class="form-control"></VisualElement>
+            <VisualElement name="category-section" class="dropdown-default form-control"></VisualElement>
+        </VisualElement>
+        <VisualElement name="table-headers"></VisualElement>
+        <ScrollView class="phrases-scrollview" show-vertical-scroller="true">
+            <VisualElement  name="phrases-table"></VisualElement>
+        </ScrollView>
+    </VisualElement>
+</engine:UXML>

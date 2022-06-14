@@ -1,0 +1,95 @@
+.form-group{
+	margin-top:5px;
+	height:auto;
+	display: flex;
+	flex-grow: 1;
+	flex-direction: row;
+	position:relative;
+}
+
+.form-label{
+	display: flex;
+	flex: 0 1 85px;
+	width:100px;
+	-unity-text-align:middle-left;
+}
+
+.form-control{
+	height:auto;
+}
+
+.dropdown-default{
+	height:25px;
+	width:200px;
+	color: black;
+}
+
+.form-container{
+	padding-top:20px;
+	height:auto;
+	padding-bottom:20px;
+}
+
+.form-text-field{
+	height:25px;
+	width:300px;
+}
+
+.form-textbox-large{
+	min-height:100px;
+	-unity-text-align:upper-left;
+	white-space: normal;
+}
+
+.form-label-textbox-large{
+	-unity-text-align:upper-left;
+}
+
+.multi-select-toggle{
+	position:relative;
+	left:50px;
+	width:200px;
+	height:25px;
+	background-color:#E4E4E4;
+	overflow:visible;
+}
+
+.multi-select-options-container{
+	position:absolute;
+	top:0px;
+	width:200px;
+}
+
+.multi-select-option{
+	background-color:#F2F2F2;
+	height:25px; 
+	width:100%;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	-unity-text-align:middle-left;
+}
+
+.multi-select-option:hover{
+	background-color:#7DC9F7;
+}
+
+.multi-select-option-toggled{
+	background-color:#90C8F6;
+}
+
+.multi-select-option-tick-container{
+	flex: 0 0 25px;
+}
+
+.multi-select-tick-image{
+	margin-top:1px;
+	margin-left:1px;
+	height:23px;
+	width:23px;
+}
+
+
+.hide{
+	display:none;
+}
