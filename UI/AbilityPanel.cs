@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class AbilityPanel : MonoBehaviour
 {
     public UIController uIController;
-    private PlayerCharacter playerCharacter;
+    private PlayerCharacterController playerCharacterController;
     private AbilityController abilityController;
     private KeybindsController keybindController;
 
@@ -55,9 +55,9 @@ public class AbilityPanel : MonoBehaviour
 
     private void Awake()
     {
-        playerCharacter = uIController.playerCharacter;
-        abilityController = playerCharacter.abilityController;
-        keybindController = playerCharacter.keybindsController;
+        playerCharacterController = uIController.playerCharacterController;
+        abilityController = playerCharacterController.abilityController;
+        keybindController = playerCharacterController.keybindsController;
 
         abilityUIinstances = new Dictionary<KeybindsController.KeyType, AbilityUIInstance>() {
             {KeybindsController.KeyType.ABILITY_1, new AbilityUIInstance(ability1Image,ability1Text, GenerateCooldownImage(ability1Image), null)},

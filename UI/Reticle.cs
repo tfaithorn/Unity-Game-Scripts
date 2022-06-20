@@ -30,7 +30,7 @@ public class Reticle : MonoBehaviour
     [SerializeField] private RectTransform reticleCenter;
     [SerializeField] private RectTransform reticleCircle;
 
-    [SerializeField] private PlayerCharacter character;
+    [SerializeField] private PlayerCharacterController playerCharacterController;
     
     Image topRectImage;
     Image bottomRectImage;
@@ -87,7 +87,7 @@ public class Reticle : MonoBehaviour
         RaycastHit[] hits;
 
         //start ray cast from player's location not from UI elemnt
-        float UiToCharacterDistance = Vector3.Distance(crossHairRay.origin, new Vector3(character.characterModelTransform.position.x, crossHairRay.origin.y, character.characterModelTransform.position.z));
+        float UiToCharacterDistance = Vector3.Distance(crossHairRay.origin, new Vector3(playerCharacterController.characterModelTransform.position.x, crossHairRay.origin.y, playerCharacterController.characterModelTransform.position.z));
 
         //Vector3 characterPos = crossHairRay.origin + (cam.transform.forward.normalized * UiToCharacterDistance);
         Vector3 characterPos = cameraAnchor.transform.position;

@@ -7,6 +7,7 @@ using TMPro;
 
 public class StatRowUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public Canvas canvas;
     public StatMouseOverTooltipController statMouseOverTooltipController;
     public string labelIdentifier;
     public string descriptionIdentifier;
@@ -30,8 +31,8 @@ public class StatRowUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerEnter(PointerEventData eventData)
     {
         statMouseOverTooltipController.SetTooltip(LanguageController.GetPhrase(descriptionIdentifier));
-        float xPos = this.myRect.position.x - (this.myRect.rect.width / 2) - statMouseOverTooltipController.panel.rect.width + 20;
-        float yPos = this.myRect.position.y - (this.myRect.rect.height / 2) - (statMouseOverTooltipController.panel.rect.height / 2);
+        float xPos = (this.myRect.position.x * (1 / canvas.scaleFactor)) - (this.myRect.rect.width / 2) - statMouseOverTooltipController.panel.rect.width;
+        float yPos = (this.myRect.position.y * (1 / canvas.scaleFactor)) - (this.myRect.rect.height / 2) - (statMouseOverTooltipController.panel.rect.height / 2);
         statMouseOverTooltipController.panel.anchoredPosition = new Vector2(xPos, yPos);
         statMouseOverTooltipController.Activate();
     }

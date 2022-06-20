@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SaveController : MonoBehaviour
 {
-    private PlayerCharacter playerCharacter;
+    private PlayerCharacterController playerCharacterController;
     private StatsController statsController;
     private InventoryController inventoryController;
     private AbilityController abilityController;
@@ -16,13 +16,13 @@ public class SaveController : MonoBehaviour
 
     private void Awake()
     {
-        playerCharacter = GetComponent<PlayerCharacter>();
+        playerCharacterController = GetComponent<PlayerCharacterController>();
         statsController = GetComponent<StatsController>();
         inventoryController = GetComponent<InventoryController>();
         abilityController = GetComponent<AbilityController>();
         keybindsController = GetComponent<KeybindsController>();
 
-        playerCharacter.id = 1;
+        playerCharacterController.id = 1;
     }
 
     private void Start()
@@ -39,36 +39,31 @@ public class SaveController : MonoBehaviour
 
     public void LoadAbilities()
     {
-        //load abilities for testing
-        /*
-        Ability basicAttack = Ability.GetByCriteria(new List<SqlClient.Expr>(){new SqlClient.Cond("id",(long)1,SqlClient.OP_EQUAL)});
+        AbilityRepository abilityRepository = new AbilityRepository();
+        var abilities = abilityRepository.GetByCriteria(new List<SqlClient.Expr>() { new SqlClient.Cond("id", new long[] {5,7}, SqlClient.OP_IN) });
 
-        playerCharacter.AddAbility(basicAttack, KeybindsController.KeyType.LEFT_CLICK);
-      
-        playerCharacter.AddAbility(basicAttack, KeybindsController.KeyType.ABILITY_1);
-        */
-        Ability longShot = Ability.GetByCriteria(new List<SqlClient.Expr>() { new SqlClient.Cond("id", 5, SqlClient.OP_EQUAL)});
-        playerCharacter.AddAbility(longShot, KeybindsController.KeyType.RIGHT_CLICK);
-
-        Ability explodingShot = Ability.GetByCriteria(new List<SqlClient.Expr>() { new SqlClient.Cond("id", 7, SqlClient.OP_EQUAL)});
-        playerCharacter.AddAbility(explodingShot, KeybindsController.KeyType.ABILITY_2);
+        Ability longShot = abilities[0];
+        Ability explodingShot = abilities[1];
+        Debug.Log(longShot.icon);
+        playerCharacterController.AddAbility(longShot, KeybindsController.KeyType.RIGHT_CLICK);
+        playerCharacterController.AddAbility(explodingShot, KeybindsController.KeyType.ABILITY_2);
 
         abilityKeys = keybindsController.abilityKeys;
         keybinds = keybindsController.keybinds;
 
-        playerCharacter.abilityKeys = abilityKeys;
-        playerCharacter.keybinds = keybinds;
-
+        playerCharacterController.abilityKeys = abilityKeys;
+        playerCharacterController.keybinds = keybinds;
     }
 
     public void LoadItems()
     {
         var criteria = new List<SqlClient.Expr>()
         {
-            new SqlClient.Cond("characterId", playerCharacter.id, SqlClient.OP_EQUAL)
+            new SqlClient.Cond("characterId", playerCharacterController.id, SqlClient.OP_EQUAL)
         };
 
-        inventoryController.characterItems = CharacterItem.GetByCriteria(criteria);
+        CharacterItemRepository characterItemRepository = new CharacterItemRepository();
+        inventoryController.characterItems = characterItemRepository.GetByCriteria(criteria);
     }
 
 }

@@ -55,7 +55,7 @@ public class KeybindsController : MonoBehaviour
 
     private AbilityController abilityController;
     public MenuController menuController;
-    private PlayerCharacter playerCharacter;
+    private PlayerCharacterController playerCharacterController;
     private CameraScript cameraScript;
 
     public InputAction movementAction;
@@ -93,7 +93,7 @@ public class KeybindsController : MonoBehaviour
         cameraScript = GetComponent<CameraScript>();
         abilityController = GetComponent<AbilityController>();
         uIController = GetComponent<UIController>();
-        playerCharacter = GetComponent<PlayerCharacter>();
+        playerCharacterController = GetComponent<PlayerCharacterController>();
 
         inputActionAsset.Enable();
 
@@ -313,119 +313,119 @@ public class KeybindsController : MonoBehaviour
 
     private void AbilityLeftClickStarted(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.LEFT_CLICK]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.LEFT_CLICK]);
     }
     private void AbilityRightClickStarted(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.RIGHT_CLICK]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.RIGHT_CLICK]);
     }
 
     private void Ability1Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_1]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_1]);
     }
 
     private void Ability2Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_2]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_2]);
     }
 
     private void Ability3Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_3]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_3]);
     }
 
     private void Ability4Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_4]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_4]);
     }
 
     private void Ability5Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_5]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_5]);
     }
 
     private void Ability6Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_6]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_6]);
     }
 
     private void Ability7Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_7]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_7]);
     }
 
     private void Ability8Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_8]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_8]);
     }
     private void Ability9Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_9]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_9]);
     }
 
     private void Ability10Started(InputAction.CallbackContext ctx)
     {
-        playerCharacter.StartedKeyPress(abilityKeys[KeyType.ABILITY_10]);
+        playerCharacterController.StartedKeyPress(abilityKeys[KeyType.ABILITY_10]);
     }
 
     private void AbilityLeftClickEnded(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.LEFT_CLICK);
+        playerCharacterController.EndedKeyPress(KeyType.LEFT_CLICK);
     }
 
     private void AbilityRightClickEnded(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.RIGHT_CLICK);
+        playerCharacterController.EndedKeyPress(KeyType.RIGHT_CLICK);
     }
 
     private void Ability1Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_1);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_1);
     }
 
     private void Ability2Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_2);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_2);
     }
 
     private void Ability3Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_3);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_3);
     }
 
     private void Ability4Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_4);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_4);
     }
 
     private void Ability5Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_5);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_5);
     }
 
     private void Ability6Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_6);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_6);
     }
 
     private void Ability7Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_7);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_7);
     }
 
     private void Ability8Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_8);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_8);
     }
 
     private void Ability9Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_9);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_9);
     }
 
     private void Ability10Ended(InputAction.CallbackContext ctx)
     {
-        playerCharacter.EndedKeyPress(KeyType.ABILITY_10);
+        playerCharacterController.EndedKeyPress(KeyType.ABILITY_10);
     }
 }

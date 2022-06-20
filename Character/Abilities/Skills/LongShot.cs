@@ -11,7 +11,7 @@ public class LongShot : AbilityScript
     private Reticle reticle;
     private PoolingHelper arrowPoolingHelper;
     private AnimationController animationController;
-    private PlayerCharacter playerCharacter;
+    private PlayerCharacterController playerCharacterController;
     private Transform cameraTransform;
     private Transform cameraAnchor;
     private RiggingManager riggingManager;
@@ -41,7 +41,7 @@ public class LongShot : AbilityScript
         uIController = GetComponent<UIController>();
         timerManager = GetComponent<TimerManager>();
         movementController = GetComponent<MovementController>();
-        playerCharacter = GetComponent<PlayerCharacter>();
+        playerCharacterController = GetComponent<PlayerCharacterController>();
         reticle = uIController.reticle.GetComponent<Reticle>();
         arrowPoolingHelper = gameObject.AddComponent<PoolingHelper>();
         cameraScript = GetComponent<CameraScript>();
@@ -52,8 +52,8 @@ public class LongShot : AbilityScript
     private void Start()
     {
         GameObject arrow = Resources.Load<GameObject>("Prefabs/Projectiles/Arrow");
-        cameraTransform = playerCharacter.cam;
-        cameraAnchor = playerCharacter.camAnchor;
+        cameraTransform = playerCharacterController.cam;
+        cameraAnchor = playerCharacterController.camAnchor;
         arrowPoolingHelper.Initialize(arrow, 20, "Long Shot Pool");
     }
 
@@ -141,7 +141,7 @@ public class LongShot : AbilityScript
         cameraScript.EnableShakeCamera(2f, 0.5f);
 
         //ignore physics with player
-        Physics.IgnoreCollision(playerCharacter.characterModelTransform.GetComponent<Collider>(), arrowObj.GetComponent<Collider>());
+        Physics.IgnoreCollision(playerCharacterController.characterModelTransform.GetComponent<Collider>(), arrowObj.GetComponent<Collider>());
 
         //place at player's hand
         arrowObj.transform.position = inventoryController.weaponRBone.position;
@@ -152,7 +152,7 @@ public class LongShot : AbilityScript
         arrowObj.SetActive(true);
 
         arrowComponent = arrowObj.GetComponent<Arrow>();
-        arrowComponent.ignoreTransforms.Add(playerCharacter.characterModelTransform);
+        arrowComponent.ignoreTransforms.Add(playerCharacterController.characterModelTransform);
         arrowComponent.ResetArrow();
         arrowComponent.colliderHitEvent += DetectCharacter;
 

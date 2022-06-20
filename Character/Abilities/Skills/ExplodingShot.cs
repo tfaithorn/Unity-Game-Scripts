@@ -20,7 +20,7 @@ public class ExplodingShot : AbilityScript
     private float chargeSpeed = 0.5f;
     private Timer chargeTimer;
     private Arrow arrowComponent;
-    private PlayerCharacter playerCharacter;
+    private PlayerCharacterController playerCharacterController;
     private ProjectorHelper projectorHelper;
 
     private void Awake()
@@ -31,7 +31,7 @@ public class ExplodingShot : AbilityScript
         timerManager = GetComponent<TimerManager>();
         arrowPoolingHelper = gameObject.AddComponent<PoolingHelper>();
         inventoryController = GetComponent<InventoryController>();
-        playerCharacter = GetComponent<PlayerCharacter>();
+        playerCharacterController = GetComponent<PlayerCharacterController>();
         myStatsController = GetComponent<StatsController>();
         movementController = GetComponent<MovementController>();
         keybindsController = GetComponent<KeybindsController>();
@@ -113,7 +113,7 @@ public class ExplodingShot : AbilityScript
         movementController.isSlowWalking = true;
 
         //ignore physics with player
-        Physics.IgnoreCollision(playerCharacter.characterModelTransform.GetComponent<Collider>(), arrowObj.GetComponent<Collider>());
+        Physics.IgnoreCollision(playerCharacterController.characterModelTransform.GetComponent<Collider>(), arrowObj.GetComponent<Collider>());
 
         //place at player's hand
         
@@ -184,7 +184,7 @@ public class ExplodingShot : AbilityScript
         Rigidbody arrowRb = arrowObj.GetComponent<Rigidbody>();
         Arrow arrowComponent = arrowObj.GetComponent<Arrow>();
 
-        arrowComponent.ignoreTransforms.Add(playerCharacter.characterModelTransform);
+        arrowComponent.ignoreTransforms.Add(playerCharacterController.characterModelTransform);
         arrowRb.isKinematic = false;
         arrowObj.transform.parent = null;
 

@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// This Script is for moving the player character.
-/// Note: using AddForce is better than velocity as velocity prevents ANY physics calculations, such as gravity
+/// This Script is to move the player.
+/// Note: using AddForce is better than velocity, as velocity will prevent ANY physics calculations such as gravity
 /// </summary>
 
 public class MovementController : MonoBehaviour
@@ -13,7 +13,7 @@ public class MovementController : MonoBehaviour
     public bool allowMovement = true;
 
     private KeybindsController keybindsController;
-    private PlayerCharacter character;
+    private PlayerCharacterController playerCharacterController;
     private Rigidbody rb;
     private Transform cameraAnchor;
     private AnimationController animationController;
@@ -35,21 +35,21 @@ public class MovementController : MonoBehaviour
     private void Awake()
     {
         keybindsController = GetComponent<KeybindsController>();
-        character = GetComponent<PlayerCharacter>();
-        rb = character.characterModelTransform.GetComponent<Rigidbody>();
+        playerCharacterController = GetComponent<PlayerCharacterController>();
+        rb = playerCharacterController.characterModelTransform.GetComponent<Rigidbody>();
         animationController = GetComponent<AnimationController>();
-        var col = character.characterModelTransform.GetComponent<Collider>();
+        var col = playerCharacterController.characterModelTransform.GetComponent<Collider>();
         distToGround = col.bounds.extents.y;
     }
 
     private void Start()
     {
-        cameraAnchor = character.camAnchor;
+        cameraAnchor = playerCharacterController.camAnchor;
         movementAction = keybindsController.keybinds[KeybindsController.KeyType.MOVEMENT];
     }
 
     private void Update() {
-        if (Physics.Raycast(character.characterModelTransform.position, -Vector3.up, distToGround + 0.1f))
+        if (Physics.Raycast(playerCharacterController.characterModelTransform.position, -Vector3.up, distToGround + 0.1f))
         {
             isGrounded = true;
         }
@@ -124,7 +124,7 @@ public class MovementController : MonoBehaviour
     public void RotateWithCamera() 
     {
         Vector3 camAnchorRotation = cameraAnchor.rotation.eulerAngles;
-        character.characterModelTransform.rotation = Quaternion.Slerp(character.characterModelTransform.rotation, Quaternion.Euler(0, camAnchorRotation.y, 0), Time.deltaTime * turnSpeed);
+        playerCharacterController.characterModelTransform.rotation = Quaternion.Slerp(playerCharacterController.characterModelTransform.rotation, Quaternion.Euler(0, camAnchorRotation.y, 0), Time.deltaTime * turnSpeed);
         
     }
 

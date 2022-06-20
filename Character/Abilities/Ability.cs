@@ -141,43 +141,4 @@ public class Ability
 
         return true;
     }
-
-    public static Ability GetByCriteria(List<SqlClient.Expr> criteria = null)
-    {
-        Ability ability = null;
-
-        string sql = @"SELECT * FROM ability {criteria}";
-
-        var paramGroup = new SqlClient.ParamGroup();
-        string preparedWhere = SqlClient.PrepareWhere(criteria, paramGroup);
-        sql = SqlClient.ReplaceToken(sql,"criteria", preparedWhere);
-
-        List<Dictionary<string, object>> result = SqlClient.Execute(sql, paramGroup);
-
-        foreach (var row in result)
-        {
-            ability = new Ability(
-                    (long)row["id"],
-                    (string)row["name"],
-                    (string)row["className"]
-            );
-
-            if (row["cooldown"] != null)
-            {
-                ability.cooldown = new Timer((float)row["cooldown"]);
-            }
-
-            if (row["icon"] != null)
-            {
-                ability.icon = (string)row["icon"];
-            }
-
-            if (row["duration"] != null)
-            {
-                ability.duration = new Timer((float)row["duration"]);
-            }
-        }
-
-        return ability;
-    }
 }

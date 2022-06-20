@@ -7,13 +7,13 @@ using UnityEngine;
 /// </summary>
 public class CameraAnchor : MonoBehaviour
 {
-    public PlayerCharacter character;
+    public PlayerCharacterController playerCharacterController;
     private Transform characterModelTransform;
     private float yOffset;
     private float zOffset;
 
     private void Start() {
-        characterModelTransform = character.characterModelTransform;
+        characterModelTransform = playerCharacterController.characterModelTransform;
         yOffset = 2f;
         zOffset = 0.1f;
     }

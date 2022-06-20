@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class MenuController : MonoBehaviour
 {
-    public PlayerCharacter playerCharacter;
+    public PlayerCharacterController playerCharacter;
     public RectTransform menuPanel;
 
     [Header("Menu Buttons")]
@@ -20,10 +20,13 @@ public class MenuController : MonoBehaviour
     [Header("Menu Panels")]
     public InventoryPanel inventoryPanel;
     public QuestPanel questPanel;
-    public TalentsAndAbilitiesPanel TalentsAndAbilitiesPanel;
+    public TalentsAndAbilitiesPanel talentsAndAbilitiesPanel;
+    public SaveLoadPanel saveLoadPanel;
 
     private List<MenuPanel> menuPanels;
     private List<Button> menuButtons;
+
+    public SavePanelController savePanelController;
 
     private MenuPanel.Type menuState;
     private bool isMenuShown = false;
@@ -48,7 +51,8 @@ public class MenuController : MonoBehaviour
         {
             questPanel,
             inventoryPanel,
-            TalentsAndAbilitiesPanel
+            talentsAndAbilitiesPanel,
+            saveLoadPanel
         };
     }
 
@@ -119,19 +123,12 @@ public class MenuController : MonoBehaviour
                 EnableMenuPanel(inventoryPanel);
                 break;
             case (int)MenuPanel.Type.TALENTSABILITIES:
-                EnableMenuPanel(TalentsAndAbilitiesPanel);
+                EnableMenuPanel(talentsAndAbilitiesPanel);
                 break;
-                /*
-                    case (int)MenuState.OBJECTIVES:
-                        EnableMenuPanel(objectivesPanel);
-                        break;
-                    case (int)MenuState.SAVELOAD:
-                        EnableMenuPanel(saveLoadPanel);
-                        break;
-                    case (int)MenuState.SETTINGS:
-                        EnableMenuPanel(settingsPanel);
-                        break;
-                */
+            case (int)MenuPanel.Type.SAVELOAD:
+                EnableMenuPanel(saveLoadPanel);
+                savePanelController.Init();
+                break;
         }
     }
 
@@ -145,7 +142,10 @@ public class MenuController : MonoBehaviour
             }
         }
 
-        currPanel.gameObject.SetActive(true);
+        if (!currPanel.gameObject.activeSelf)
+        {
+            currPanel.gameObject.SetActive(true);
+        }
     }
 
     private void HideCurrentMenuPanel()

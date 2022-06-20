@@ -31,6 +31,10 @@ public static class SqlClient
     public const string OP_LIKE = "LIKE";
     public const string OP_NOTLIKE = "NOT LIKE";
 
+    public enum Function { 
+        CURRENT_TIMESTAMP
+    }
+
     private const string parameterSymbol = "@";
 
     /// <summary>
@@ -105,7 +109,7 @@ public static class SqlClient
             {
                 command.CommandText = sql;
 
-                //Debug.Log(sql);
+                Debug.Log(sql);
 
                 //Prepare optional parameters
                 if(parameters != null)
@@ -175,7 +179,24 @@ public static class SqlClient
             if (expr is Cond)
             {
                 Cond condition = (Cond)expr;
-                sql += " " + condition.field + " " + condition.operation + " " + paramGroup.RequestParameter(condition.value);
+
+                string value = "";
+
+                //if value is a function bypass paramgroup
+                if (condition.value is Function)
+                {
+                    value = GetFunctionText((Function)condition.value);
+                }
+                if (condition.operation == OP_IN)
+                {
+                    value = CreateInCondition(condition, paramGroup);
+                }
+                else
+                {
+                    value = paramGroup.RequestParameter(condition.value);
+                }
+                
+                sql += " " + condition.field + " " + condition.operation + " " + value;
             }
 
             //Note: Has not yet been tested
@@ -202,7 +223,7 @@ public static class SqlClient
         return sql;
     }
 
-    public static string PrepareInsert(Dictionary<string, object> values, ParamGroup paramGroup, bool returnId)
+    public static string PrepareInsert(Dictionary<string, object> values, ParamGroup paramGroup, bool returnId = false)
     {
         if (values.Count == 0)
         {
@@ -252,7 +273,17 @@ public static class SqlClient
 
         foreach (var item in values)
         {
-            sql += " " + item.Key + " = " + paramGroup.RequestParameter(item.Value);
+            sql += " " + item.Key + " = ";
+
+            //if it is a function bypass paramgroup
+            if (item.Value is Function)
+            {
+                sql += GetFunctionText((Function)item.Value);
+            }
+            else
+            {
+                sql += paramGroup.RequestParameter(item.Value);
+            }
 
             if (i < itemCount - 1)
             {
@@ -280,5 +311,38 @@ public static class SqlClient
         }
 
         return newDict;
+    }
+
+    private static string CreateInCondition(Cond condition, ParamGroup paramGroup)
+    {
+        string value = "(";
+        int inIndex = 1;
+        var objArray = condition.value as Array;
+
+        foreach (var val in objArray)
+        {
+            value += paramGroup.RequestParameter(val);
+
+            if (inIndex != objArray.Length)
+            {
+                value += ",";
+            }
+
+            inIndex++;
+        }
+
+        value += ")";
+
+        return value;
+    }
+
+    private static string GetFunctionText(Function funct)
+    {
+        switch (funct) {
+            case Function.CURRENT_TIMESTAMP:
+                return "CURRENT_TIMESTAMP";
+            default:
+                return "";
+        }
     }
 }

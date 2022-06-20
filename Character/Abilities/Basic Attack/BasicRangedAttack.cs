@@ -13,7 +13,7 @@ public class BasicRangedAttack : AbilityScript
     private Reticle reticle;
     private PoolingHelper arrowPoolingHelper;
     private AnimationController animationController;
-    private PlayerCharacter playerCharacter;
+    private PlayerCharacterController playerCharacterController;
     private MovementController movementController;
     private UIController uIController;
     private HitColliderHelper hitColliderHelper;
@@ -34,7 +34,7 @@ public class BasicRangedAttack : AbilityScript
         uIController = GetComponent<UIController>();
         timerManager = GetComponent<TimerManager>();
         movementController = GetComponent<MovementController>();
-        playerCharacter = GetComponent<PlayerCharacter>();
+        playerCharacterController = GetComponent<PlayerCharacterController>();
         reticle = uIController.reticle.GetComponent<Reticle>();
         arrowPoolingHelper = gameObject.AddComponent<PoolingHelper>();
         hitColliderHelper = new HitColliderHelper();
@@ -98,7 +98,7 @@ public class BasicRangedAttack : AbilityScript
         movementController.isSlowWalking = true;
 
         //ignore physics with player
-        Physics.IgnoreCollision(playerCharacter.characterModelTransform.GetComponent<Collider>(), arrowObj.GetComponent<Collider>());
+        Physics.IgnoreCollision(playerCharacterController.characterModelTransform.GetComponent<Collider>(), arrowObj.GetComponent<Collider>());
 
         //place at player's hand
         arrowObj.transform.position = inventoryController.weaponRBone.position;
@@ -121,7 +121,7 @@ public class BasicRangedAttack : AbilityScript
         Rigidbody arrowRb = arrowObj.GetComponent<Rigidbody>();
         Arrow arrowComponent = arrowObj.GetComponent<Arrow>();
 
-        arrowComponent.ignoreTransforms.Add(playerCharacter.characterModelTransform);
+        arrowComponent.ignoreTransforms.Add(playerCharacterController.characterModelTransform);
         arrowRb.isKinematic = false;
         arrowObj.transform.parent = null;
 

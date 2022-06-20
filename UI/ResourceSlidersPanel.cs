@@ -16,7 +16,7 @@ public class ResourceSlidersPanel : MonoBehaviour
 
     private void Awake()
     {
-        statsController = uIController.playerCharacter.statsController;
+        statsController = uIController.playerCharacterController.statsController;
     }
 
     private void Start()

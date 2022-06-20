@@ -12,6 +12,7 @@ public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public TextMeshProUGUI itemName;
     public Image itemImage;
     public ItemMouseOverTooltipController itemMouseOverTooltipController;
+    public Canvas canvas;
 
     private void Start()
     {
@@ -20,9 +21,11 @@ public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        itemMouseOverTooltipController.SetItem(itemName.text, itemDescription.text);
-        float xPos = this.myRect.position.x - (this.myRect.rect.width / 2) - itemMouseOverTooltipController.panel.rect.width + 15;
-        float yPos = this.myRect.position.y - (this.myRect.rect.height / 2) - (itemMouseOverTooltipController.panel.rect.height / 2);
+        float xOffset = -3;
+
+        float xPos = ((this.myRect.position.x * (1 / canvas.scaleFactor)) - (itemMouseOverTooltipController.panel.rect.width)) + xOffset;
+        float yPos = (this.myRect.position.y * (1 / canvas.scaleFactor) + (itemMouseOverTooltipController.panel.rect.height / 2) - this.myRect.rect.height);
+
         itemMouseOverTooltipController.panel.anchoredPosition = new Vector2(xPos, yPos);
         itemMouseOverTooltipController.Activate();
     }
@@ -32,9 +35,9 @@ public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         itemMouseOverTooltipController.Deactivate();
     }
 
-    public void SetItem(Item newitem, ItemMouseOverTooltipController itemMouseOverTooltipController)
+    public void SetItem(Item newitem, ItemMouseOverTooltipController itemMouseOverTooltipController, Canvas canvas)
     {
-
+        this.canvas = canvas;
         this.itemMouseOverTooltipController = itemMouseOverTooltipController;
         this.itemDescription.text = LanguageController.GetPhrase(newitem.descriptionIdentifier.name);
         this.itemName.text = LanguageController.GetPhrase(newitem.nameIdentifier.name);

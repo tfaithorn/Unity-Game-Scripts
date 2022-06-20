@@ -7,13 +7,13 @@ public class BasicMeleeAttack : BasicAttack
     private Ability abilityRef;
     //private InventoryController inventoryController;
     private HitColliderHelper hitWeaponGroup;
-    private PlayerCharacter character;
+    private PlayerCharacterController character;
     private AnimationController animationController;
     //private InventoryController inventoryController;
 
     private void Awake()
     {
-        character = (PlayerCharacter)GetComponent<Character>();
+        character = (PlayerCharacterController)GetComponent<Character>();
     }
 
     private void Start()
