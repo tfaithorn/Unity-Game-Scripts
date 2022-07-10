@@ -17,6 +17,7 @@ public class OverrideSavePanel : MonoBehaviour
 
     public void ConfirmOverrideSave()
     {
+        save.name = saveNameText.text;
         savePanelController.OverrideSave(save);
     }
 

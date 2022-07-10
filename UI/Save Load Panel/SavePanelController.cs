@@ -18,12 +18,15 @@ public class SavePanelController : MonoBehaviour
     public Mode mode;
     public RectTransform saveContainerPanel;
     public RectTransform loadContainerPanel;
+    public LoadGameConfirmationPanel loadGameConfirmationPanel;
     public TMP_Dropdown playerDropdown;
     public OverrideSavePanel overrideSavePanel;
     public Sprite defaultPreviewSprite;
+    public SaveController saveController;
+    private SceneController sceneController;
 
-    private List<PlayerCharacter> playerCharacters;
-    public PlayerCharacter playerCharacter;
+    private List<Player> playerList;
+    public Player selectedPlayer;
 
     public enum Mode
     {
@@ -33,13 +36,16 @@ public class SavePanelController : MonoBehaviour
 
     public void Awake()
     {
-        playerCharacter = PlayerCharacterManager.playerCharacter;
-        playerCharacters = PlayerCharacterManager.playerCharacters;
+        playerList = PlayerDatabase.GetPlayerList();
+        saveController = SaveController.FindSaveController();
+        sceneController = SceneController.FindSceneController();
+        selectedPlayer = PlayerDatabase.GetLastPlayed();
+
 
         if (playerDropdown != null)
         {
             playerDropdown.onValueChanged.AddListener(x => {
-                playerCharacter = playerCharacters[x];
+                selectedPlayer = playerList[x];
                 saveListPanel.Init();
             });
         }
@@ -50,6 +56,7 @@ public class SavePanelController : MonoBehaviour
         switch (mode) {
             case Mode.SAVE:
                 if (saveContainerPanel != null) {
+                    ResetPreviewPanel();
                     saveContainerPanel.gameObject.SetActive(true);
                 }
 
@@ -59,6 +66,7 @@ public class SavePanelController : MonoBehaviour
                 break;
             case Mode.LOAD:
                 if (loadContainerPanel != null) {
+                    ResetPreviewPanel();
                     loadContainerPanel.gameObject.SetActive(true);
                 }
 
@@ -69,8 +77,12 @@ public class SavePanelController : MonoBehaviour
                 SetPlayerCharacterDropdown();
                 break;      
         }
+    }
 
+    private void ResetPreviewPanel()
+    {
         previewImage.sprite = defaultPreviewSprite;
+        previewSummary.text = "";
     }
 
     public void Init()
@@ -110,45 +122,42 @@ public class SavePanelController : MonoBehaviour
 
     public void SaveGame(string saveName)
     {
-        var saveValues = new Dictionary<string, object>()
-        {
-            { "playerId", playerCharacter.id},
-            { "saveData", GetSaveData()},
-            { "name", saveName}
-        };
-
-        var saveRepository = new SaveRepository();
-        var saveId = saveRepository.Insert(saveValues, true);
-        SaveScreenshot(saveId);
+        SceneController sceneController = SceneController.FindSceneController();
+        var sceneId = sceneController.currentSceneZone.GetSceneId();
+        Save save = saveController.SaveGame(saveName, sceneId, cam);
+        SaveScreenshot(save.id);
         Init();
+    }
+
+    public void LoadGame()
+    {
+        //TODO: look into adding a load screen here for when coroutine execution is complete
+        saveController.LoadSave(loadGameConfirmationPanel.save);
     }
 
     private void SetPlayerCharacterDropdown()
     {
-        playerCharacters = PlayerCharacterManager.playerCharacters;
-
         List<string> options = new List<string>();
 
-        foreach (PlayerCharacter playerCharacter in playerCharacters)
+        foreach (Player player in playerList)
         {
-            options.Add(playerCharacter.name);
+            options.Add(player.name);
         }
 
         playerDropdown.ClearOptions();
         playerDropdown.AddOptions(options);
-        playerDropdown.value = playerCharacters.FindIndex(x => x.id == this.playerCharacter.id);
-
+        playerDropdown.value = playerList.FindIndex(x => x.id == selectedPlayer.id);
     }
 
     public void SetSavePreview(Save save)
     {
+        ResetPreviewPanel();
+
         string path = Application.streamingAssetsPath + "/" + Constants.saveScreenshotPath + "/" + save.id + "." + Constants.saveScreenshotExtension;
-        Debug.Log("calling set preview?");
         Sprite previewSprite;
 
         if (File.Exists(path))
         {
-            Debug.Log("file exists?");
             byte[] pngBytes = System.IO.File.ReadAllBytes(path);
 
             Texture2D tex = new Texture2D(2, 2);
@@ -160,6 +169,12 @@ public class SavePanelController : MonoBehaviour
         }
     }
 
+    
+    /// <summary>
+    /// Takes a screenshot using the main camera
+    /// Note: Look at moving this to the camera script.
+    /// </summary>
+    /// <param name="saveId"></param>
     private void SaveScreenshot(long saveId)
     {
         int resHeight = Screen.height;
@@ -189,26 +204,10 @@ public class SavePanelController : MonoBehaviour
         overrideSavePanel.SetValues(save);
     }
 
-    public void OverrideSave(Save save)
-    {    
-        var saveValues = new Dictionary<string, object>()
-        {
-            { "saveData", GetSaveData()},
-            { "name", overrideSavePanel.saveNameText.text},
-            { "createdAt", SqlClient.Function.CURRENT_TIMESTAMP}
-        };
-
-        var criteria = new List<SqlClient.Expr>()
-        { 
-            new SqlClient.Cond("id", save.id, SqlClient.OP_EQUAL)
-        };
-
-        SaveRepository saveRepository = new SaveRepository();
-        saveRepository.Update(saveValues, criteria);
-        SaveScreenshot(save.id);
-
-        HideOverridePanel();
-        saveListPanel.Init();
+    public void ShowLoadConfirmationPanel(Save save)
+    {
+        loadGameConfirmationPanel.gameObject.SetActive(true);
+        loadGameConfirmationPanel.Initialise(saveController, save);
     }
 
     public void HideOverridePanel()
@@ -216,9 +215,16 @@ public class SavePanelController : MonoBehaviour
         overrideSavePanel.gameObject.SetActive(false);
     }
 
-    public string GetSaveData()
+    public void HideLoadConfirmationPanel()
     {
-        //TBC: return save data as a json string
-        return "<TBC>";
+        loadGameConfirmationPanel.gameObject.SetActive(false);
+    }
+    public void OverrideSave(Save save)
+    {
+        
+
+        saveController.OverrideSave(save, sceneController.currentSceneZone.GetSceneId());
+        HideOverridePanel();
+        Init();
     }
 }

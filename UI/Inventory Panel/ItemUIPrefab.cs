@@ -39,8 +39,8 @@ public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         this.canvas = canvas;
         this.itemMouseOverTooltipController = itemMouseOverTooltipController;
-        this.itemDescription.text = LanguageController.GetPhrase(newitem.descriptionIdentifier.name);
-        this.itemName.text = LanguageController.GetPhrase(newitem.nameIdentifier.name);
+        this.itemDescription.text = LanguageController.GetPhrase(newitem.descriptionIdentifier);
+        this.itemName.text = LanguageController.GetPhrase(newitem.nameIdentifier);
 
         if (newitem.icon != null)
         {

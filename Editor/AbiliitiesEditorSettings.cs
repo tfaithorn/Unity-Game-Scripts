@@ -8,6 +8,7 @@ using UnityEditor.UIElements;
 
 public class AbiliitiesEditorSettings : EditorWindow
 {
+    /*
     class Ability { 
         private int id;
         private string name;
@@ -48,4 +49,5 @@ public class AbiliitiesEditorSettings : EditorWindow
         
 
     }
+    */
 }

@@ -61,16 +61,16 @@ public class StatsDamageRowToolTipController : MonoBehaviour
         damageDescriptionText.text = LanguageController.GetPhrase("meleeDamage.label.description");
 
         totalDamageValueText.text = statsController.GetAddedWeaponDamage().ToString();
-        physicalDamageValueText.text = statsController.GetStatValue(StatsController.StatType.PHYSICAL_MELEE_DAMAGE).ToString();
-        fireDamageValueText.text = statsController.GetStatValue(StatsController.StatType.FIRE_MELEE_DAMAGE).ToString();
-        coldDamageValueText.text = statsController.GetStatValue(StatsController.StatType.COLD_MELEE_DAMAGE).ToString();
-        lightningDamageValueText.text = statsController.GetStatValue(StatsController.StatType.LIGHTNING_MELEE_DAMAGE).ToString();
-        chaosDamageValueText.text = statsController.GetStatValue(StatsController.StatType.CHAOS_MELEE_DAMAGE).ToString();
-        arcaneDamageValueText.text = statsController.GetStatValue(StatsController.StatType.ARCANE_MELEE_DAMAGE).ToString();
-        poisonDamageValueText.text = statsController.GetStatValue(StatsController.StatType.POISON_MELEE_DAMAGE).ToString();
-        holyDamageValueText.text = statsController.GetStatValue(StatsController.StatType.HOLY_MELEE_DAMAGE).ToString();
-        unholyDamageValueText.text = statsController.GetStatValue(StatsController.StatType.UNHOLY_MELEE_DAMAGE).ToString();
-        shadowDamageValueText.text = statsController.GetStatValue(StatsController.StatType.SHADOW_MELEE_DAMAGE).ToString();
+        physicalDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_PHYSICAL_DAMAGE).ToString();
+        fireDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_FIRE_DAMAGE).ToString();
+        coldDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_COLD_DAMAGE).ToString();
+        lightningDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_LIGHTNING_DAMAGE).ToString();
+        chaosDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_CHAOS_DAMAGE).ToString();
+        arcaneDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_ARCANE_DAMAGE).ToString();
+        poisonDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_POISON_DAMAGE).ToString();
+        holyDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_HOLY_DAMAGE).ToString();
+        unholyDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_UNHOLY_DAMAGE).ToString();
+        shadowDamageValueText.text = statsController.GetStatValue(StatsController.StatType.MELEE_SHADOW_DAMAGE).ToString();
 
         string minDamage = statsController.GetStatValue(StatsController.StatType.MIN_WEAPON_DAMAGE).ToString();
         string maxDamage = statsController.GetStatValue(StatsController.StatType.MAX_WEAPON_DAMAGE).ToString();

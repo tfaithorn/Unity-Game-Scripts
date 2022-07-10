@@ -9,7 +9,7 @@ public class InventoryPanel : MenuPanel
     public Canvas canvas;
     public RectTransform inventoryListPanel;
     public RectTransform statsContentPanel;
-    public PlayerCharacterController playerCharacterController;
+    public PlayerCharacterMB playerCharacterController;
     public ItemMouseOverTooltipController itemMouseOverTooltipController;
     public StatMouseOverTooltipController statMouseOverTooltipController;
     private InventoryController inventoryController;
@@ -53,12 +53,12 @@ public class InventoryPanel : MenuPanel
         }
     }
 
-    private void SetInventoryList(List<CharacterItem> characterItems)
+    private void SetInventoryList(List<ItemCharacter> inventory)
     {
-        foreach (CharacterItem characterItem in characterItems)
+        foreach (ItemCharacter itemCharacter in inventory)
         {
             ItemUIPrefab itemUIPrefab = Resources.Load<ItemUIPrefab>("Prefabs/UI Prefabs/Item Panel");
-            itemUIPrefab.SetItem(characterItem.item, itemMouseOverTooltipController, canvas);
+            itemUIPrefab.SetItem(itemCharacter.item, itemMouseOverTooltipController, canvas);
             Instantiate(itemUIPrefab, inventoryListPanel);
         }
     }
@@ -66,7 +66,7 @@ public class InventoryPanel : MenuPanel
     public void GetInventoryList(int itemType)
     {
         ClearItemList();
-        SetInventoryList(playerCharacterController.inventoryController.GetByType((ItemCategory.CategoryType)itemType));
+        SetInventoryList(playerCharacterController.inventory.GetByType((ItemCategory.CategoryType)itemType));
     }
 
     private void SetSliders()

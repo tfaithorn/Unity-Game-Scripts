@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class Hittable : MonoBehaviour
 {
-    public Character character;
+    public CharacterMB character;
 
 }

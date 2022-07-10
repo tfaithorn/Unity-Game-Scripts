@@ -10,7 +10,8 @@ public abstract class DbRepository
     public abstract string GetTableName();
     public abstract string GetOrderBy();
 
-    public List<Dictionary<string, object>> GetResult(List<SqlClient.Expr> criteria = null)
+    //public abstract List<T> GetByCriteria<T>(List<SqlClient.Expr> criteria = null);
+    protected List<Dictionary<string, object>> GetResult(List<SqlClient.Expr> criteria = null)
     {
         string sql = "SELECT {fields} FROM {tableName} {dbJoins} {preparedWhere} ORDER BY {orderBy}";
         var paramGroup = new SqlClient.ParamGroup();
@@ -27,7 +28,7 @@ public abstract class DbRepository
         return SqlClient.Execute(sql, paramGroup);
     }
 
-    public long Insert(Dictionary<string, object> values, bool returnId = false)
+    protected long Insert(Dictionary<string, object> values, bool returnId = false)
     {
         string sql = @"INSERT INTO {tableName} {values}";
 
@@ -51,7 +52,7 @@ public abstract class DbRepository
         }
     }
 
-    public void Update(Dictionary<string, object> values, List<SqlClient.Expr> criteria)
+    protected void Update(Dictionary<string, object> values, List<SqlClient.Expr> criteria)
     {
         string sql = @"
                 UPDATE 

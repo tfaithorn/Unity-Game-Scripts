@@ -5,16 +5,11 @@ using UnityEngine;
 public class SaveListPanel : MonoBehaviour
 {
     public List<Save> saves;
-    List<SaveUIPrefab> instantiatedSaveUIPrefabs = new List<SaveUIPrefab>();
     public bool allowInteraction = true;
     public SavePanelController savePanelController;
-    private PoolingHelper savePoolingHelper;
 
     private void Awake()
     {
-        savePoolingHelper = gameObject.AddComponent<PoolingHelper>();
-        GameObject saveUIPrefab = Resources.Load<GameObject>(Constants.UIprefabsPath + "/save");
-        savePoolingHelper.Initialize(saveUIPrefab, 20, "Save List Pooling Helper");
     }
 
     public void Init()
@@ -25,29 +20,25 @@ public class SaveListPanel : MonoBehaviour
 
     private void ResetList()
     {
-        foreach (SaveUIPrefab saveUIPrefab in instantiatedSaveUIPrefabs)
+        foreach (Transform saveUIPrefab in this.transform)
         {
-            savePoolingHelper.ReturnItem(saveUIPrefab.gameObject);
+            GameObject.Destroy(saveUIPrefab.gameObject);
         }
 
         saves = null;
-        instantiatedSaveUIPrefabs.Clear();
     }
 
     private void PopulateList()
     {
-
-        saves = SaveManager.GetSavesByPlayerCharacterId(savePanelController.playerCharacter.id);
+        var saveRepository = new SaveRepository();
+        saves = saveRepository.GetSavesByPlayerId(savePanelController.selectedPlayer.id);
 
         foreach (var save in saves)
         {
-            var instantiatedSave = savePoolingHelper.RequestItem();
-            var saveUIPrefab = instantiatedSave.GetComponent<SaveUIPrefab>();
-
+            SaveUIPrefab prefab = Resources.Load<SaveUIPrefab>(Constants.UIprefabsPath + "/save");
+            var saveUIPrefab = Instantiate(prefab, this.transform,false);
             saveUIPrefab.SetValues(save, this, savePanelController);
-            instantiatedSave.transform.SetParent(this.transform,false);
             saveUIPrefab.gameObject.SetActive(true);
-            instantiatedSaveUIPrefabs.Add(saveUIPrefab);
         }
     }
 

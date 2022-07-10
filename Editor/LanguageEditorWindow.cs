@@ -9,6 +9,7 @@ using System;
 
 public class LanguageEditorWindow : EditorWindow
 {
+    /*
     VisualElement rootElement;
     VisualElement phrasesSection;
     VisualElement categorySection;
@@ -355,4 +356,5 @@ public class LanguageEditorWindow : EditorWindow
 
         LanguageIdentifier.Delete(criteria);
     }
+    */
 }

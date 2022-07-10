@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class StartScreen : MonoBehaviour
 {
+    public SceneController sceneController;
     public SavePanelController savePanelController;
     public State state;
     public RectTransform settingsPanel;
@@ -21,9 +22,8 @@ public class StartScreen : MonoBehaviour
 
         loadingScreen.Init();
         loadingScreen.SetProgress(20f);
-        PlayerCharacterManager.LoadPlayerCharacters();
+
         loadingScreen.SetProgress(0.50f);
-        SaveManager.LoadSaves();
         loadingScreen.SetProgress(1f);
         loadingScreen.Finish();
     }
@@ -37,12 +37,14 @@ public class StartScreen : MonoBehaviour
 
     public void Continue()
     {
-        SceneController.LoadSceneAsync(SceneController.SceneType.LEVEL_1);
+        
+        //sceneController.LoadScene(sceneController., StartingZone.nodeName1);
+        //sceneController.sceneOne.LoadScene(SceneOne.nodeName1);
     }
 
     public void NewGame()
     {
-        SceneController.LoadSceneAsync(SceneController.SceneType.LEVEL_1);
+        sceneController.LoadScene(SceneZoneDatabase.GetSceneZone(1), StartingZone.nodeName1);
     }
 
     public void LoadGame()

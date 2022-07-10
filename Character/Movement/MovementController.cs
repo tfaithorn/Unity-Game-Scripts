@@ -13,7 +13,7 @@ public class MovementController : MonoBehaviour
     public bool allowMovement = true;
 
     private KeybindsController keybindsController;
-    private PlayerCharacterController playerCharacterController;
+    private PlayerCharacterMB playerCharacterController;
     private Rigidbody rb;
     private Transform cameraAnchor;
     private AnimationController animationController;
@@ -35,7 +35,7 @@ public class MovementController : MonoBehaviour
     private void Awake()
     {
         keybindsController = GetComponent<KeybindsController>();
-        playerCharacterController = GetComponent<PlayerCharacterController>();
+        playerCharacterController = GetComponent<PlayerCharacterMB>();
         rb = playerCharacterController.characterModelTransform.GetComponent<Rigidbody>();
         animationController = GetComponent<AnimationController>();
         var col = playerCharacterController.characterModelTransform.GetComponent<Collider>();

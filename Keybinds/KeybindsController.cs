@@ -55,7 +55,7 @@ public class KeybindsController : MonoBehaviour
 
     private AbilityController abilityController;
     public MenuController menuController;
-    private PlayerCharacterController playerCharacterController;
+    private PlayerCharacterMB playerCharacterController;
     private CameraScript cameraScript;
 
     public InputAction movementAction;
@@ -93,7 +93,7 @@ public class KeybindsController : MonoBehaviour
         cameraScript = GetComponent<CameraScript>();
         abilityController = GetComponent<AbilityController>();
         uIController = GetComponent<UIController>();
-        playerCharacterController = GetComponent<PlayerCharacterController>();
+        playerCharacterController = GetComponent<PlayerCharacterMB>();
 
         inputActionAsset.Enable();
 

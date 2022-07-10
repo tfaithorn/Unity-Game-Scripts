@@ -2,18 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Script placed on a lighting gameobject to make it controlled by the environment's time.
+/// Note: Requires the lighting gameobject have the 'Lighting Source' tag.
+/// </summary>
 public class EnvironmentLighting : MonoBehaviour
 {
-    EnvironmentTime environmentTime;
-    public Light globalLightObj;
+    private PersistentScripts persistentScripts;
+    private EnvironmentTime environmentTime;
+    private Light globalLightObj;
+
+    private void Awake()
+    {
+        var gb = GameObject.FindGameObjectWithTag(Constants.persistentScriptsTagName);
+
+        if (gb) {
+            persistentScripts = gb.GetComponent<PersistentScripts>();
+        }
+
+        this.globalLightObj = GetComponent<Light>();
+    }
 
     void Start()
     {
         //get reference to time component
-        environmentTime = this.GetComponent<EnvironmentTime>();
+        if (persistentScripts)
+        {
+            environmentTime = persistentScripts.GetComponent<EnvironmentTime>();
 
-        //add event listener to update lighting
-        environmentTime.hourIncreaseEvent.AddListener(UpdateSceneLighting);
+            if (environmentTime != null)
+            {
+                //add event listener to update lighting
+                environmentTime.hourIncreaseEvent.AddListener(UpdateSceneLighting);
+            }
+        }
     }
 
     void UpdateSceneLighting()

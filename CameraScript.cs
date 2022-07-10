@@ -13,9 +13,6 @@ public class CameraScript : MonoBehaviour
     private bool moveAnchorToPosition = false;
     private Vector3 newAnchorPosition;
 
-    public float camZDistance = 40f;
-    private float camYDistance = 2f;
-
     private float minZDistance = 10f;
     private float maxZDistance = 100f;
 
@@ -26,8 +23,11 @@ public class CameraScript : MonoBehaviour
     private float rotationSpeed = 4f;
     private float zoomSpeed = 2f;
 
-    private float rotationX;
-    private float rotationY;
+    public float camZDistance = 40f;
+    private float camYDistance = 2f;
+
+    public float rotationX;
+    public float rotationY;
 
     private bool allowZoom = true;
     private bool allowLook = true;
@@ -41,6 +41,7 @@ public class CameraScript : MonoBehaviour
     private float shakeMagnitudeY;
     private float shakeMagnitude;
     private Timer shakeMagnitudeTimer;
+
 
 
     public readonly float zoomShootingDistance = 10f;
@@ -238,5 +239,12 @@ public class CameraScript : MonoBehaviour
         RotateAnchor(rotX, rotY);
     }
 
+    public void InitializeCamera(float rotationX, float rotationY, float camZDistance)
+    {
+        cameraAnchor.rotation = Quaternion.Euler(rotationX, rotationY, 0);
+        this.rotationX = rotationX;
+        this.rotationY = rotationY;
+        this.camZDistance = camZDistance;
+    }
 }
 

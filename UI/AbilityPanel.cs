@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class AbilityPanel : MonoBehaviour
 {
     public UIController uIController;
-    private PlayerCharacterController playerCharacterController;
+    private PlayerCharacterMB playerCharacterController;
     private AbilityController abilityController;
     private KeybindsController keybindController;
 

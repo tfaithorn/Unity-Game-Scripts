@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public delegate void OnRegisterHit(Character character);
+public delegate void OnRegisterHit(CharacterMB character);
 public class HitColliderHelper
 {
     //Todo: Look at swapping out HitCollider of interface with OnHit
     public event OnRegisterHit OnRegisterHit;
-    private List<Guid> targetsHit = new List<Guid>();
+    private List<string> targetsHit = new List<string>();
     private List<HitCollider> hitColliders;
 
     public void ActivateHitColliders(List<HitCollider> hitColliders)
@@ -30,12 +30,12 @@ public class HitColliderHelper
         }
     }
 
-    private void RegisterHit(Character enemy)
+    private void RegisterHit(CharacterMB enemy)
     {
         //ensure a hit hasn't been registered twice against the same character
-        if (!targetsHit.Exists(x => x == enemy.guid))
+        if (!targetsHit.Exists(x => x == enemy.guid.ToString()))
         {
-            targetsHit.Add(enemy.guid);
+            targetsHit.Add(enemy.guid.ToString());
             OnRegisterHit.Invoke(enemy);
             //ApplyDamage(enemy.statsController);
         }
@@ -43,7 +43,7 @@ public class HitColliderHelper
 
     public void ResetTargetList()
     {
-        targetsHit = new List<Guid>();
+        targetsHit = new List<string>();
     }
 
     public void SetHitColliders(HitColliderManager hitColliderManager)

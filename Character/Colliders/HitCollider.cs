@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void OnHitEvent(Character character);
+public delegate void OnHitEvent(CharacterMB character);
 
 public class HitCollider : MonoBehaviour, iHitInterface
 {

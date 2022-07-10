@@ -100,7 +100,7 @@ public static class SqlClient
 
     public static List<Dictionary<string, object>> Execute(string sql, ParamGroup parameters = null)
     {
-        List<Dictionary<string, object>> result = new List<Dictionary<string, object>>();
+        List<Dictionary<string, object>> result = null;
 
         using (var connection = new SqliteConnection(dbName))
         {
@@ -109,7 +109,7 @@ public static class SqlClient
             {
                 command.CommandText = sql;
 
-                Debug.Log(sql);
+                //Debug.Log(sql);
 
                 //Prepare optional parameters
                 if(parameters != null)
@@ -121,6 +121,11 @@ public static class SqlClient
                 }
 
                 using IDataReader reader = command.ExecuteReader();
+
+                if (reader.FieldCount > 0)
+                {
+                    result = new List<Dictionary<string, object>>();
+                }
 
                 while (reader.Read())
                 {

@@ -26,7 +26,7 @@ public class EnemyHealthSlider : MonoBehaviour
         reticle.reticleTargetChange += SetEnemyStatsController;
     }
 
-    public void SetEnemyStatsController(Character character)
+    public void SetEnemyStatsController(CharacterMB character)
     {
         //clear existing statsController event
 
@@ -35,17 +35,19 @@ public class EnemyHealthSlider : MonoBehaviour
             enemyStatsController.updateHealthEvent -= UpdateEnemyHealthSlider;
         }
 
-        //bind event to change slider value
-        enemyStatsController = character.statsController;
-        enemyStatsController.updateHealthEvent += UpdateEnemyHealthSlider;
+        if (character.statsController != null)
+        {
+            //bind event to change slider value
+            enemyStatsController = character.statsController;
+            enemyStatsController.updateHealthEvent += UpdateEnemyHealthSlider;
 
-        float enemyHealth = enemyStatsController.GetStatValue(StatsController.StatType.CURR_HEALTH);
-        float enemyMaxHealth = enemyStatsController.GetStatValue(StatsController.StatType.MAX_HEALTH);
+            float enemyHealth = enemyStatsController.GetStatValue(StatsController.StatType.CURR_HEALTH);
+            float enemyMaxHealth = enemyStatsController.GetStatValue(StatsController.StatType.MAX_HEALTH);
 
-        UpdateEnemyHealthSlider(enemyHealth, enemyMaxHealth);
+            UpdateEnemyHealthSlider(enemyHealth, enemyMaxHealth);
 
-        isSubscribed = true;
-
+            isSubscribed = true;
+        }
     }
 
     private void UpdateEnemyHealthSlider(float currentHealth, float maxHealth)

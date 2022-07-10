@@ -22,22 +22,10 @@ public class SaveUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
         this.createdAt.text = save.createdAt.ToString();
         this.saveListPanel = saveListPanel;
         this.savePanelController = savePanelController;
-        /*
-        string path = Application.streamingAssetsPath + "/" + Constants.saveScreenshotPath + "/" + save.id + "." + Constants.saveScreenshotExtension;
-
-        if (File.Exists(path)) 
-        {
-            byte[] pngBytes = System.IO.File.ReadAllBytes(path);
-
-            Texture2D tex = new Texture2D(2, 2);
-            tex.LoadImage(pngBytes);
-            previewSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
-        }*/
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("On  pointer enter called?");
         if (saveListPanel.allowInteraction)
         {
             saveListPanel.savePanelController.SetSavePreview(this.save);
@@ -49,6 +37,10 @@ public class SaveUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
         if (savePanelController.mode == SavePanelController.Mode.SAVE)
         {
             savePanelController.ShowOverridePanel(save);
+        }
+        else if (savePanelController.mode == SavePanelController.Mode.LOAD)
+        {
+            savePanelController.ShowLoadConfirmationPanel(save);
         }
     }
 }

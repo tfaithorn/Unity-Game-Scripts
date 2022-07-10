@@ -10,7 +10,7 @@ using System.Linq;
 /// </summary>
 public class Reticle : MonoBehaviour
 {
-    public delegate void RecticleTargetChange(Character character);
+    public delegate void RecticleTargetChange(CharacterMB character);
     public event RecticleTargetChange reticleTargetChange;
 
     public enum PositionType { 
@@ -30,7 +30,7 @@ public class Reticle : MonoBehaviour
     [SerializeField] private RectTransform reticleCenter;
     [SerializeField] private RectTransform reticleCircle;
 
-    [SerializeField] private PlayerCharacterController playerCharacterController;
+    [SerializeField] private PlayerCharacterMB playerCharacterMB;
     
     Image topRectImage;
     Image bottomRectImage;
@@ -87,7 +87,7 @@ public class Reticle : MonoBehaviour
         RaycastHit[] hits;
 
         //start ray cast from player's location not from UI elemnt
-        float UiToCharacterDistance = Vector3.Distance(crossHairRay.origin, new Vector3(playerCharacterController.characterModelTransform.position.x, crossHairRay.origin.y, playerCharacterController.characterModelTransform.position.z));
+        float UiToCharacterDistance = Vector3.Distance(crossHairRay.origin, new Vector3(playerCharacterMB.characterModelTransform.position.x, crossHairRay.origin.y, playerCharacterMB.characterModelTransform.position.z));
 
         //Vector3 characterPos = crossHairRay.origin + (cam.transform.forward.normalized * UiToCharacterDistance);
         Vector3 characterPos = cameraAnchor.transform.position;
@@ -102,12 +102,11 @@ public class Reticle : MonoBehaviour
             crossHairHitTarget = hits[0].collider.gameObject;
 
             if (currentTarget != crossHairHitTarget)
-            { 
-                Character character = crossHairHitTarget.GetComponentInParent<Character>();
+            {
+                CharacterMB character = crossHairHitTarget.GetComponentInParent<CharacterMB>();
                 if (character)
                 {
-                    Debug.Log("is a character?");
-                    reticleTargetChange?.Invoke(character.GetComponent<Character>());
+                    reticleTargetChange?.Invoke(character.GetComponent<CharacterMB>());
                     currentTarget = crossHairHitTarget;
                 }
             }
@@ -125,7 +124,6 @@ public class Reticle : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(crossHairHitPoint, 0.2f);
     }
-
 
     private void EvaluateReticlePosition()
     {

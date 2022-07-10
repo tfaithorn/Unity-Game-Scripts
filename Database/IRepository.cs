@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IRepository<T>
 {
-    List<T> GetByCriteria(List<SqlClient.Expr> criteria = null);
+    //List<T> GetByCriteria(List<SqlClient.Expr> criteria = null);
 }

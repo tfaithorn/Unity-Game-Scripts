@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class MenuController : MonoBehaviour
 {
-    public PlayerCharacterController playerCharacter;
+    public PlayerCharacterMB playerCharacter;
     public RectTransform menuPanel;
 
     [Header("Menu Buttons")]

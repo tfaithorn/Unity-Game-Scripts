@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class AnimationController : MonoBehaviour
 {
-    Character character;
+    CharacterMB character;
     Animator animator;
 
     public void Awake()
     {
-        character = GetComponent<Character>();
+        character = GetComponent<CharacterMB>();
         animator = character.animator;
     }
 

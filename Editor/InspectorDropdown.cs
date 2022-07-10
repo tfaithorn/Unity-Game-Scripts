@@ -8,6 +8,7 @@ using System.Linq;
 [CustomEditor(typeof(LabelPhrase))]
 public class InspectorDropdown : Editor
 {
+    /*
     List<LanguageCategory> languageCategories;
     List<string> languageCategoriesString;
     List<LanguageSubCategory> languageSubCategories;
@@ -106,6 +107,7 @@ public class InspectorDropdown : Editor
         }
 
     }
+    */
 
 }
 

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    public PlayerCharacterController playerCharacterController;
+    public PlayerCharacterMB playerCharacterController;
     public MenuController menuController;
 
     //keybinding buttons
