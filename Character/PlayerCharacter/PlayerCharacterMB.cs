@@ -7,7 +7,7 @@ public class PlayerCharacterMB : CharacterMB
 {
     public KeybindsController keybindsController;
     public Transform cam;
-    public Transform camAnchor;
+    public CameraAnchor camAnchor;
     public CameraScript cameraScript;
     public AbilityController abilityController;
     public AnimationController animationController;
@@ -16,7 +16,6 @@ public class PlayerCharacterMB : CharacterMB
     private bool allowMovement = false;
     private bool allowIdle = false;
     private SaveController saveController;
-
     public Dictionary<KeybindsController.KeyType, Ability> abilityKeys;
     public Dictionary<KeybindsController.KeyType, InputAction> keybinds;
 
@@ -39,8 +38,8 @@ public class PlayerCharacterMB : CharacterMB
     {
         base.Awake();
 
-        this.id = 1;
-        this.name = "test Character";
+        //this.id = 1;
+        //this.name = "test Character";
 
         animationController = GetComponent<AnimationController>();
         movementController = GetComponent<MovementController>();
@@ -53,6 +52,12 @@ public class PlayerCharacterMB : CharacterMB
         if (saveController != null) {
             saveController.LoadPlayerCharacter(this);   
         }
+    }
+
+    public void Initialise(Player player)
+    {
+        this.id = player.id;
+        this.name = player.name;
     }
 
     private void Start()

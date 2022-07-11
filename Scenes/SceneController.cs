@@ -15,12 +15,23 @@ public class SceneController : MonoBehaviour
     }
 
     /// <summary>
-    /// Coroutine that loads the scene. If a nodeName is provided the player will instantiated at that node
+    /// Non-asynchronous method to start async load scene.
+    /// Note: This is to allow non-persistent scripts to call it, otherwise the corountine will never finish
+    /// </summary>
+    /// <param name="sceneZone"></param>
+    /// <param name="nodeName"></param>
+    public void LoadScene(SceneZone sceneZone, string nodeName = null)
+    {
+        StartCoroutine(LoadSceneAsync(sceneZone,nodeName));
+    }
+
+    /// <summary>
+    /// Coroutine that loads the scene. When a nodeName is provided the player will be instantiated at the node
     /// </summary>
     /// <param name="sceneZone"></param>
     /// <param name="nodeName"></param>
     /// <returns></returns>
-    public IEnumerator LoadScene(SceneZone sceneZone, string nodeName = null)
+    public IEnumerator LoadSceneAsync(SceneZone sceneZone, string nodeName = null)
     {
         var sceneName = sceneZone.GetSceneName();
         var progress = SceneManager.LoadSceneAsync(sceneName);
@@ -35,7 +46,7 @@ public class SceneController : MonoBehaviour
         if (nodeName != null)
         {
             List<SceneNode> nodes = GameObject.FindGameObjectsWithTag(Constants.sceneNodeTagName).ToList().ConvertAll(x => x.GetComponent<SceneNode>());
-
+            
             foreach (SceneNode node in nodes)
             {
                 if (node.name == nodeName)
@@ -43,10 +54,11 @@ public class SceneController : MonoBehaviour
                     PlayerCharacterMB playerCharacter = GetPlayerPrefab();
 
                     var placeCharacterOptions = new PlaceCharacterOptions();
-                    placeCharacterOptions.position = node.transform.position;
+                    placeCharacterOptions.SetPosition(node.transform.position);
 
                     var go = PlaceCharacter(playerCharacter, placeCharacterOptions);
-                    saveController.thisPlayerCharacterMB = (PlayerCharacterMB)go;
+                    saveController.playerCharacterMB = (PlayerCharacterMB)go;
+                    saveController.playerCharacterMB.Initialise(saveController.player);
                 }
             }
         }
@@ -67,17 +79,12 @@ public class SceneController : MonoBehaviour
 
         if (options.position != null)
         {
-            instantiatedCharacterTransform.position = options.position;
+            instantiatedCharacterTransform.position = options.position.vector3;
         }
 
         if (options.rotation != null)
         {
-            instantiatedCharacterTransform.rotation = Quaternion.Euler(options.rotation.x, options.rotation.y, options.rotation.z);
-        }
-
-        if (options.scale != null)
-        {
-            instantiatedCharacterTransform.localScale = options.scale;
+            instantiatedCharacterTransform.rotation = options.rotation.quaternion;
         }
 
         return instantiatedCharacter;

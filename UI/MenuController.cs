@@ -64,7 +64,7 @@ public class MenuController : MonoBehaviour
         menuState = MenuPanel.Type.QUESTS;
     }
 
-    private void EnableGameplay()
+    public void EnableGameplay()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -79,7 +79,7 @@ public class MenuController : MonoBehaviour
         menuPanel.gameObject.SetActive(false);
     }
 
-    private void EnableMenu()
+    public void EnableMenu()
     {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;

@@ -33,6 +33,22 @@ public class PlayerRepository : DbRepository, IRepository<Player>
         return orderBy;
     }
 
+    public Player AddNewPlayer(string name)
+    {
+        var values = new Dictionary<string, object>()
+        {
+            {"name", name}
+        };
+        var playerId = Insert(values, true);
+
+        var criteria = new List<SqlClient.Expr>()
+        {
+            new SqlClient.Cond("player.id", playerId, SqlClient.OP_EQUAL)
+        };
+
+        return GetByCriteria(criteria)[0];
+    }
+
     public List<Player> GetPlayers()
     {
         return GetByCriteria();

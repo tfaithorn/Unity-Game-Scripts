@@ -64,7 +64,7 @@ public class CameraScript : MonoBehaviour
     {
         keybindsController.lookEvent += CameraInput;
 
-        RotateAnchor(initialXRotation, initialYRotation);
+        //RotateAnchor(initialXRotation, initialYRotation);
 
         //middle mouse scroll
         keybindsController.keybinds[KeybindsController.KeyType.ZOOM].performed += context => {
@@ -116,7 +116,6 @@ public class CameraScript : MonoBehaviour
 
         if (camZDistance - zStep > minZDistance)
         {
-
             camZDistance -= zStep;
             UpdateCamDistance();
             if (DetectObstruction())
@@ -241,7 +240,7 @@ public class CameraScript : MonoBehaviour
 
     public void InitializeCamera(float rotationX, float rotationY, float camZDistance)
     {
-        cameraAnchor.rotation = Quaternion.Euler(rotationX, rotationY, 0);
+        //cameraAnchor.rotation = Quaternion.Euler(rotationX, rotationY, 0);
         this.rotationX = rotationX;
         this.rotationY = rotationY;
         this.camZDistance = camZDistance;

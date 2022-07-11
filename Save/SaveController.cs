@@ -65,10 +65,7 @@ public class SaveController : MonoBehaviour
         public float rotationX;
         public float rotationY;
         public float rotationZ;
-
-        public float scaleX;
-        public float scaleY;
-        public float scaleZ;
+        public float rotationW;
     }
 
     [Serializable]
@@ -117,7 +114,8 @@ public class SaveController : MonoBehaviour
     Dictionary<KeybindsController.KeyType, InputAction> keybinds;
     List<Character> charactersLoadedInScene;
     public long currentSaveId;
-    public PlayerCharacterMB thisPlayerCharacterMB;
+    public Player player;
+    public PlayerCharacterMB playerCharacterMB;
 
     public void Awake()
     {
@@ -125,6 +123,17 @@ public class SaveController : MonoBehaviour
 
         sceneController = GetComponent<SceneController>();
         charactersLoadedInScene = new List<Character>();
+    }
+
+    public void CreateNewPlayer(string name)
+    {
+        var playerRepository = new PlayerRepository();
+        this.player = playerRepository.AddNewPlayer(name);
+    }
+
+    public void SetPlayerIdentity(Player player)
+    {
+        playerCharacterMB.Initialise(player);
     }
 
     public void LoadPlayerCharacter(PlayerCharacterMB playerCharacterController)
@@ -145,6 +154,10 @@ public class SaveController : MonoBehaviour
 
     private IEnumerator LoadSaveAsync(Save save)
     {
+        //pause time
+        Time.timeScale = 0;
+
+
         var saveRepository = new SaveRepository();
         var saveData = JsonUtility.FromJson<PlayerSaveData>(save.saveData);
         var transformSaveData = saveData.characterSaveData.transformSaveData;
@@ -152,29 +165,36 @@ public class SaveController : MonoBehaviour
         Vector3 playerPosition = new Vector3(transformSaveData.x, transformSaveData.y, transformSaveData.z);
 
         SceneZone sceneZone = SceneZoneDatabase.GetSceneZone(save.sceneId);
-        yield return StartCoroutine(sceneController.LoadScene(sceneZone));
+        yield return StartCoroutine(sceneController.LoadSceneAsync(sceneZone));
 
         var playerMbGameObject = sceneController.GetPlayerPrefab();
         var placeCharacterOptions = new PlaceCharacterOptions();
-        placeCharacterOptions.position = new Vector3(transformSaveData.x, transformSaveData.y, transformSaveData.z);
-        placeCharacterOptions.rotation = new Vector3(transformSaveData.rotationX, transformSaveData.rotationY, transformSaveData.rotationZ);
-        placeCharacterOptions.scale = new Vector3(transformSaveData.scaleX, transformSaveData.scaleY, transformSaveData.scaleZ);
-
-        thisPlayerCharacterMB = (PlayerCharacterMB)sceneController.PlaceCharacter(playerMbGameObject, placeCharacterOptions);
+        placeCharacterOptions.SetPosition(new Vector3(transformSaveData.x, transformSaveData.y, transformSaveData.z));
+        placeCharacterOptions.SetRotation(new Quaternion(transformSaveData.rotationX, transformSaveData.rotationY, transformSaveData.rotationZ, transformSaveData.rotationW));
+        this.playerCharacterMB = (PlayerCharacterMB)sceneController.PlaceCharacter(playerMbGameObject, placeCharacterOptions);
         
         //set camera anchor transform
-        thisPlayerCharacterMB.camAnchor.localPosition = new Vector3(cameraSaveData.cameraAnchorTransform.x, cameraSaveData.cameraAnchorTransform.y, cameraSaveData.cameraAnchorTransform.z);
-        thisPlayerCharacterMB.camAnchor.rotation = Quaternion.Euler(cameraSaveData.cameraAnchorTransform.rotationX, cameraSaveData.cameraAnchorTransform.rotationY, cameraSaveData.cameraAnchorTransform.rotationZ);
-        //thisPlayerCharacterMB.camAnchor.localScale = new Vector3(cameraSaveData.cameraAnchorTransform.scaleX, cameraSaveData.cameraAnchorTransform.scaleY, cameraSaveData.cameraAnchorTransform.scaleZ);
-        
+        this.playerCharacterMB.camAnchor.transform.position = new Vector3(cameraSaveData.cameraAnchorTransform.x, cameraSaveData.cameraAnchorTransform.y, cameraSaveData.cameraAnchorTransform.z);
+        this.playerCharacterMB.camAnchor.transform.rotation = new Quaternion(cameraSaveData.cameraAnchorTransform.rotationX, cameraSaveData.cameraAnchorTransform.rotationY, cameraSaveData.cameraAnchorTransform.rotationZ, cameraSaveData.cameraAnchorTransform.rotationW);
+
         //Set camera transform
-        thisPlayerCharacterMB.cam.position = new Vector3(cameraSaveData.cameraTransform.x, cameraSaveData.cameraTransform.y, cameraSaveData.cameraTransform.z);
-        thisPlayerCharacterMB.cam.rotation = Quaternion.Euler(cameraSaveData.cameraTransform.rotationX, cameraSaveData.cameraTransform.rotationY, cameraSaveData.cameraTransform.rotationZ);
-        thisPlayerCharacterMB.cam.localScale = new Vector3(cameraSaveData.cameraTransform.scaleX, cameraSaveData.cameraTransform.scaleY, cameraSaveData.cameraTransform.scaleZ);
+        this.playerCharacterMB.cam.position = new Vector3(cameraSaveData.cameraTransform.x, cameraSaveData.cameraTransform.y, cameraSaveData.cameraTransform.z);
+        this.playerCharacterMB.cam.rotation = new Quaternion(cameraSaveData.cameraTransform.rotationX, cameraSaveData.cameraTransform.rotationY, cameraSaveData.cameraTransform.rotationZ, cameraSaveData.cameraTransform.rotationW);
 
         //set cameraScript variables
-        thisPlayerCharacterMB.cameraScript.InitializeCamera(cameraSaveData.cameraRotationX, cameraSaveData.cameraRotationY, cameraSaveData.cameraDistance);
+        this.playerCharacterMB.cameraScript.InitializeCamera(cameraSaveData.cameraRotationX, cameraSaveData.cameraRotationY, cameraSaveData.cameraDistance);
 
+        //Load NPC characters that have data in the scene
+        this.player = save.player;
+        this.playerCharacterMB.Initialise(this.player);
+
+        //resume time
+        MenuController menuController = GameObject.FindObjectOfType<MenuController>();
+
+        if (menuController)
+        {
+            menuController.EnableGameplay();
+        }
     }
 
     private void LoadCharacterAbilities(PlayerCharacterMB playerCharacterController)
@@ -207,7 +227,6 @@ public class SaveController : MonoBehaviour
             };
 
             ItemCharacterRepository itemCharacterRepository = new ItemCharacterRepository();
-            //characterInventory.inventory = itemCharacterRepository.GetByCriteria(criteria);
 
             var inventory = itemCharacterRepository.GetByCriteria(criteria);
 
@@ -239,7 +258,7 @@ public class SaveController : MonoBehaviour
     public void OverrideSave(Save save, long sceneId)
     {
         SaveRepository saveRepository = new SaveRepository();
-        save.saveData = JsonUtility.ToJson(GenerateCharacterSaveData(thisPlayerCharacterMB));
+        save.saveData = JsonUtility.ToJson(GenerateCharacterSaveData(this.playerCharacterMB));
         save.sceneId = sceneId;
         saveRepository.OverrideSave(save);
 
@@ -251,10 +270,11 @@ public class SaveController : MonoBehaviour
     private void LoadDataForScene(SceneZone sceneZone)
     {        
         var saveCharacterRepository = new SaveCharacterRepository();
-        var saveCharacters = saveCharacterRepository.GetNpcsForScene(sceneZone.GetSceneId());
+        var saveCharacters = saveCharacterRepository.LoadNpcCharactersForScene(sceneZone.GetSceneId(), this.playerCharacterMB.id);
 
         foreach (SaveCharacter saveCharacter in saveCharacters)
         {
+            Debug.Log("Characters loaded?" + saveCharacter.character.name);
             var npcCharacter = Resources.Load<NpcCharacterMB>(Constants.characterModelPath + "/" + saveCharacter.character.prefabPath);
         }
     }
@@ -298,7 +318,7 @@ public class SaveController : MonoBehaviour
     public Save SaveGame(string saveName, long sceneId, Camera cam)
     {
         var saveRepository = new SaveRepository();
-        var characterSaveData = GenerateCharacterSaveData(thisPlayerCharacterMB);
+        var characterSaveData = GenerateCharacterSaveData(this.playerCharacterMB);
         var cameraSaveData = GenerateCameraSaveData();
 
         var saveData = new PlayerSaveData(characterSaveData, cameraSaveData);
@@ -306,7 +326,7 @@ public class SaveController : MonoBehaviour
         string jsonSaveData = JsonUtility.ToJson(saveData);
 
         Debug.Log(jsonSaveData);
-        var save = saveRepository.NewSave(thisPlayerCharacterMB.id, saveName, jsonSaveData, sceneId);
+        var save = saveRepository.NewSave(this.player.id, saveName, jsonSaveData, sceneId);
         //SaveManager.AddSave(save);
 
         SaveNpcCharactersForScene(save.id, sceneId);
@@ -315,15 +335,12 @@ public class SaveController : MonoBehaviour
 
     private CameraSaveData GenerateCameraSaveData()
     {
-        var cameraAnchorTransformData = GenerateTransformSaveData(thisPlayerCharacterMB.camAnchor);
-        var cameraTransformData = GenerateTransformSaveData(thisPlayerCharacterMB.cameraScript.cam.transform);
-        Debug.Log(thisPlayerCharacterMB.cameraScript.cam);
-        Debug.Log(cameraAnchorTransformData);
-        Debug.Log(cameraTransformData);
+        var cameraAnchorTransformData = GenerateTransformSaveData(this.playerCharacterMB.camAnchor.transform);
+        var cameraTransformData = GenerateTransformSaveData(this.playerCharacterMB.cameraScript.cam.transform);
 
-        var cameraRotationX = thisPlayerCharacterMB.cameraScript.rotationX;
-        var cameraRotationY = thisPlayerCharacterMB.cameraScript.rotationY;
-        var cameraDistance = thisPlayerCharacterMB.cameraScript.camZDistance;
+        var cameraRotationX = this.playerCharacterMB.cameraScript.rotationX;
+        var cameraRotationY = this.playerCharacterMB.cameraScript.rotationY;
+        var cameraDistance = this.playerCharacterMB.cameraScript.camZDistance;
 
         CameraSaveData cameraSaveData = new CameraSaveData(cameraAnchorTransformData, cameraTransformData, cameraRotationX, cameraRotationY, cameraDistance);
 
@@ -366,16 +383,14 @@ public class SaveController : MonoBehaviour
     private TransformSaveData GenerateTransformSaveData(Transform transform)
     {
         TransformSaveData transformSaveData = new TransformSaveData();
+        var rotation = transform.rotation;
         transformSaveData.x = transform.position.x;
         transformSaveData.y = transform.position.y;
         transformSaveData.z = transform.position.z;
-        transformSaveData.rotationX = transform.rotation.x;
-        transformSaveData.rotationY = transform.rotation.y;
-        transformSaveData.rotationZ = transform.rotation.z;
-        transformSaveData.scaleX = transform.localScale.x;
-        transformSaveData.scaleY = transform.localScale.y;
-        transformSaveData.scaleZ = transform.localScale.z;
-
+        transformSaveData.rotationX = rotation.x;
+        transformSaveData.rotationY = rotation.y;
+        transformSaveData.rotationZ = rotation.z;
+        transformSaveData.rotationW = rotation.w;
         return transformSaveData;
     }
 

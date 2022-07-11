@@ -165,11 +165,10 @@ public class SavePanelController : MonoBehaviour
             previewSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
 
             previewImage.sprite = previewSprite;
-            previewSummary.text = save.playerCharacter.name;
+            previewSummary.text = save.player.name;
         }
     }
 
-    
     /// <summary>
     /// Takes a screenshot using the main camera
     /// Note: Look at moving this to the camera script.

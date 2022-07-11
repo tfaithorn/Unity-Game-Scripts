@@ -53,7 +53,7 @@ public class LongShot : AbilityScript
     {
         GameObject arrow = Resources.Load<GameObject>("Prefabs/Projectiles/Arrow");
         cameraTransform = playerCharacterController.cam;
-        cameraAnchor = playerCharacterController.camAnchor;
+        cameraAnchor = playerCharacterController.camAnchor.transform;
         arrowPoolingHelper.Initialize(arrow, 20, "Long Shot Pool");
     }
 

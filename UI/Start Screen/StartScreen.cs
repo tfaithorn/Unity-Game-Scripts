@@ -13,6 +13,7 @@ public class StartScreen : MonoBehaviour
     public LoadingScreen loadingScreen;
     List<RectTransform> menuPanels;
 
+
     private void Awake()
     {
         menuPanels = new List<RectTransform>() {
@@ -44,7 +45,11 @@ public class StartScreen : MonoBehaviour
 
     public void NewGame()
     {
-        sceneController.LoadScene(SceneZoneDatabase.GetSceneZone(1), StartingZone.nodeName1);
+        var saveController = SaveController.FindSaveController();
+        var name = "Mr Grumpy Pants";
+        saveController.CreateNewPlayer(name);
+
+        sceneController.LoadScene(SceneZoneDatabase.GetSceneZone(2), StartingZone.nodeName1);
     }
 
     public void LoadGame()

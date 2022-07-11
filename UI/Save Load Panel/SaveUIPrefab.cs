@@ -10,7 +10,6 @@ public class SaveUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 {
     public TextMeshProUGUI name;
     public TextMeshProUGUI createdAt;
-    public Sprite previewSprite;
     public SaveListPanel saveListPanel;
     public SavePanelController savePanelController;
     public Save save;

@@ -20,6 +20,7 @@ public class CameraAnchor : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         //follow the character model without being parented so that the rotation can remain independent for both
         transform.position = characterModelTransform.position + characterModelTransform.TransformDirection(new Vector3(0, yOffset, zOffset));
     }

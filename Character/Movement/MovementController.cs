@@ -44,7 +44,7 @@ public class MovementController : MonoBehaviour
 
     private void Start()
     {
-        cameraAnchor = playerCharacterController.camAnchor;
+        cameraAnchor = playerCharacterController.camAnchor.transform;
         movementAction = keybindsController.keybinds[KeybindsController.KeyType.MOVEMENT];
     }
 
