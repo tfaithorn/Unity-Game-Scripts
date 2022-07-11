@@ -48,7 +48,6 @@ public class StartScreen : MonoBehaviour
         var saveController = SaveController.FindSaveController();
         var name = "Mr Grumpy Pants";
         saveController.CreateNewPlayer(name);
-
         sceneController.LoadScene(SceneZoneDatabase.GetSceneZone(2), StartingZone.nodeName1);
     }
 

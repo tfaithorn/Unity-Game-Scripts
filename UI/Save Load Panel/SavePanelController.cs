@@ -39,8 +39,6 @@ public class SavePanelController : MonoBehaviour
         playerList = PlayerDatabase.GetPlayerList();
         saveController = SaveController.FindSaveController();
         sceneController = SceneController.FindSceneController();
-        selectedPlayer = PlayerDatabase.GetLastPlayed();
-
 
         if (playerDropdown != null)
         {
@@ -53,6 +51,15 @@ public class SavePanelController : MonoBehaviour
 
     public void EnabledSelected()
     {
+        if (saveController.player != null)
+        {
+            selectedPlayer = saveController.player;
+        }
+        else
+        {
+            selectedPlayer  = PlayerDatabase.GetLastPlayed();
+        }
+
         switch (mode) {
             case Mode.SAVE:
                 if (saveContainerPanel != null) {
@@ -73,8 +80,9 @@ public class SavePanelController : MonoBehaviour
                 if (saveContainerPanel != null) {
                     saveContainerPanel.gameObject.SetActive(false);
                 }
-                
-                SetPlayerCharacterDropdown();
+
+                SetPlayerCharacterDropdown(selectedPlayer);
+
                 break;      
         }
     }
@@ -135,18 +143,25 @@ public class SavePanelController : MonoBehaviour
         saveController.LoadSave(loadGameConfirmationPanel.save);
     }
 
-    private void SetPlayerCharacterDropdown()
+    private void SetPlayerCharacterDropdown(Player currentPlayer = null)
     {
         List<string> options = new List<string>();
 
+        int i = 0;
         foreach (Player player in playerList)
         {
+            if (player == currentPlayer)
+            {
+                playerDropdown.value = i;
+            }
+
             options.Add(player.name);
+            i++;
         }
 
         playerDropdown.ClearOptions();
         playerDropdown.AddOptions(options);
-        playerDropdown.value = playerList.FindIndex(x => x.id == selectedPlayer.id);
+        //playerDropdown.value = playerList.FindIndex(x => x.id == selectedPlayer.id);
     }
 
     public void SetSavePreview(Save save)

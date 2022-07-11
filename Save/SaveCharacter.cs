@@ -9,12 +9,13 @@ public class SaveCharacter
     public Character character;
     public long sceneId;
     public string saveData;
-
-    public SaveCharacter(Save save, Character character, long sceneId, string saveData)
+    public string guid;
+    public SaveCharacter(Save save, Character character, long sceneId, string saveData, string guid)
     {
         this.save = save;
         this.character = character;
         this.sceneId = sceneId;
         this.saveData = saveData;
+        this.guid = guid;
     }
 }

@@ -40,4 +40,16 @@ public static class PlayerDatabase
     {
         return playerList;
     }
+
+    public static void AddNewPlayer(Player player)
+    {
+        players[player.id] = player;
+
+        if (!playerList.Exists(x => x == player))
+        {
+            playerList.Add(player);
+        }
+
+        lastPlayedPlayer = player;
+    }
 }

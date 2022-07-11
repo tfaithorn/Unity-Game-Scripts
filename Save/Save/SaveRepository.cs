@@ -87,6 +87,37 @@ public class SaveRepository : DbRepository, IRepository<Save>
         return GetByCriteria()[0];
     }
 
+    public long GetLatestSaveIdForScene(long sceneId, long playerId)
+    {
+        var criteria = new List<SqlClient.Expr>()
+        {
+            new SqlClient.Cond("playerId", playerId, SqlClient.OP_EQUAL),
+            new SqlClient.Cond("sceneId", sceneId, SqlClient.OP_EQUAL),
+        };
+
+        var sql = @"SELECT 
+                        * 
+                    FROM save 
+                    {criteria}
+                    ORDER BY 
+	                    createdAt DESC
+                    LIMIT 1";
+        var paramGroup = new SqlClient.ParamGroup();
+        var preparedWhere = SqlClient.PrepareWhere(criteria, paramGroup);
+        sql = SqlClient.ReplaceToken(sql, "criteria", preparedWhere);
+
+        var result = SqlClient.Execute(sql, paramGroup);
+
+        if (result.Count == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return (long)result[0]["id"];
+        }
+    }
+
     public List<Save> GetByCriteria(List<SqlClient.Expr> criteria = null)
     {
         var result = GetResult(criteria);

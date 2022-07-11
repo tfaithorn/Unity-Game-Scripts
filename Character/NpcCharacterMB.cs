@@ -114,6 +114,11 @@ public class NpcCharacterMB : CharacterMB
         return true;
     }
 
+    public virtual bool ShouldCharacterBeReplaced()
+    {
+        return true;
+    }
+
     private bool CheckIfScheduleChanged()
     {
         return true;

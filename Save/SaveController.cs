@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using System;
+using System.Linq;
+
 public class SaveController : MonoBehaviour
 {
     [Serializable]
@@ -61,7 +63,6 @@ public class SaveController : MonoBehaviour
         public float x;
         public float y;
         public float z;
-
         public float rotationX;
         public float rotationY;
         public float rotationZ;
@@ -113,7 +114,7 @@ public class SaveController : MonoBehaviour
     Dictionary<KeybindsController.KeyType, Ability> abilityKeys;
     Dictionary<KeybindsController.KeyType, InputAction> keybinds;
     List<Character> charactersLoadedInScene;
-    public long currentSaveId;
+    public Save currentSave;
     public Player player;
     public PlayerCharacterMB playerCharacterMB;
 
@@ -143,8 +144,8 @@ public class SaveController : MonoBehaviour
     }
 
     /// <summary>
-    /// Note: The LoadSaveAsync coroutine must be called from a persistent/static object
-    /// or it will stop running when the scene unloads
+    /// Note: The LoadSaveAsync coroutine must be called from a persistent/static object, or it will stop 
+    /// running when the scene is unloaded
     /// </summary>
     /// <param name="save"></param>
     public void LoadSave(Save save)
@@ -156,7 +157,6 @@ public class SaveController : MonoBehaviour
     {
         //pause time
         Time.timeScale = 0;
-
 
         var saveRepository = new SaveRepository();
         var saveData = JsonUtility.FromJson<PlayerSaveData>(save.saveData);
@@ -184,9 +184,12 @@ public class SaveController : MonoBehaviour
         //set cameraScript variables
         this.playerCharacterMB.cameraScript.InitializeCamera(cameraSaveData.cameraRotationX, cameraSaveData.cameraRotationY, cameraSaveData.cameraDistance);
 
-        //Load NPC characters that have data in the scene
+        //Load initialise the player character
         this.player = save.player;
         this.playerCharacterMB.Initialise(this.player);
+
+        //Load characters in the scene that have data
+        LoadNpcCharactersForScene(SceneZoneDatabase.GetSceneZone(save.sceneId));
 
         //resume time
         MenuController menuController = GameObject.FindObjectOfType<MenuController>();
@@ -264,18 +267,39 @@ public class SaveController : MonoBehaviour
 
         //update runtime data with new save details
         Save updatedSave = saveRepository.GetSaveById(save.id);
-        //SaveManager.UpdateSave(updatedSave);
     }
 
-    private void LoadDataForScene(SceneZone sceneZone)
+    private void LoadNpcCharactersForScene(SceneZone sceneZone)
     {        
         var saveCharacterRepository = new SaveCharacterRepository();
         var saveCharacters = saveCharacterRepository.LoadNpcCharactersForScene(sceneZone.GetSceneId(), this.playerCharacterMB.id);
 
+        List<NpcCharacterMB> npcCharactersInScene = GameObject.FindObjectsOfType<NpcCharacterMB>().ToList();
+
         foreach (SaveCharacter saveCharacter in saveCharacters)
         {
-            Debug.Log("Characters loaded?" + saveCharacter.character.name);
-            var npcCharacter = Resources.Load<NpcCharacterMB>(Constants.characterModelPath + "/" + saveCharacter.character.prefabPath);
+            var characterInScene = npcCharactersInScene.Find(x => x.guid == saveCharacter.guid);
+            
+            //Destroy character with the same guid in scene
+            if (characterInScene != null)
+            {
+                bool replaceCharacter = characterInScene.ShouldCharacterBeReplaced();
+
+                if (replaceCharacter)
+                {
+                    GameObject.Destroy(characterInScene);
+                    Debug.Log("Character did reload!" + saveCharacter.guid);
+                    //Instantiate the character in the scene
+                    var npcCharacter = Resources.Load<NpcCharacterMB>(Constants.characterModelPath + "/" + saveCharacter.character.prefabPath);
+                    var saveData = JsonUtility.FromJson<CharacterSaveData>(saveCharacter.saveData);
+
+                    PlaceCharacterOptions placeCharacterOptions = new PlaceCharacterOptions();
+                    placeCharacterOptions.SetPosition(new Vector3(saveData.transformSaveData.x, saveData.transformSaveData.y, saveData.transformSaveData.z));
+                    placeCharacterOptions.SetRotation(new Quaternion(saveData.transformSaveData.rotationX, saveData.transformSaveData.rotationY, saveData.transformSaveData.rotationZ, saveData.transformSaveData.rotationW));
+                    sceneController.PlaceCharacter(npcCharacter, placeCharacterOptions);
+                }
+            }
+            
         }
     }
 
@@ -288,10 +312,16 @@ public class SaveController : MonoBehaviour
         {
             var characterSaveData = GenerateCharacterSaveData(npcCharacter);
             string jsonSaveData = JsonUtility.ToJson(characterSaveData);
-            saveCharacterRepository.SaveCharacter(jsonSaveData, npcCharacter.id, saveId, sceneId);
+            saveCharacterRepository.SaveCharacter(jsonSaveData, npcCharacter.id, saveId, sceneId, npcCharacter.guid);
         }
     }
-
+    /*
+    /// <summary>
+    /// Note: Move this to camera script
+    /// </summary>
+    /// <param name="saveId"></param>
+    /// <param name="cam"></param>
+    /// 
     private void SaveScreenshot(long saveId, Camera cam)
     {
         int resHeight = Screen.height;
@@ -313,7 +343,7 @@ public class SaveController : MonoBehaviour
 
         System.IO.File.WriteAllBytes(path, bytes);
         Debug.Log(string.Format("Took screenshot to: {0}", filename));
-    }
+    }*/
 
     public Save SaveGame(string saveName, long sceneId, Camera cam)
     {
@@ -325,9 +355,8 @@ public class SaveController : MonoBehaviour
 
         string jsonSaveData = JsonUtility.ToJson(saveData);
 
-        Debug.Log(jsonSaveData);
         var save = saveRepository.NewSave(this.player.id, saveName, jsonSaveData, sceneId);
-        //SaveManager.AddSave(save);
+        currentSave = save;
 
         SaveNpcCharactersForScene(save.id, sceneId);
         return save;

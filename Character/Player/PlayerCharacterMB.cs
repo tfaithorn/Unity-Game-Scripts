@@ -37,18 +37,14 @@ public class PlayerCharacterMB : CharacterMB
     protected override void Awake()
     {
         base.Awake();
-
-        //this.id = 1;
-        //this.name = "test Character";
-
-        animationController = GetComponent<AnimationController>();
-        movementController = GetComponent<MovementController>();
-        abilityController = GetComponent<AbilityController>();
-        statsController = GetComponent<StatsController>();
-        keybindsController = GetComponent<KeybindsController>();
+        this.animationController = GetComponent<AnimationController>();
+        this.movementController = GetComponent<MovementController>();
+        this.abilityController = GetComponent<AbilityController>();
+        this.statsController = GetComponent<StatsController>();
+        this.keybindsController = GetComponent<KeybindsController>();
         this.inventory = GetComponent<InventoryController>();
+        this.saveController = SaveController.FindSaveController();
 
-        saveController = SaveController.FindSaveController();
         if (saveController != null) {
             saveController.LoadPlayerCharacter(this);   
         }
