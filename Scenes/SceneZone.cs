@@ -6,9 +6,8 @@ using System.Linq;
 
 public abstract class SceneZone
 {
-    protected long id;
-    protected string name;
-
+    public long id;
+    public string name;
     public long GetSceneId()
     {
         return this.id;

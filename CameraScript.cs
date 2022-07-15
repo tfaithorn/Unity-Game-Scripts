@@ -62,7 +62,7 @@ public class CameraScript : MonoBehaviour
 
     private void Start()
     {
-        keybindsController.lookEvent += CameraInput;
+        keybindsController.lookEvent.AddListener(CameraInput);
 
         //RotateAnchor(initialXRotation, initialYRotation);
 
@@ -237,6 +237,12 @@ public class CameraScript : MonoBehaviour
         float rotY = input.y * Mathf.Deg2Rad;
         RotateAnchor(rotX, rotY);
     }
+
+    /// <summary>
+    /// Takes a screenshot using the main camera
+    /// Note: Look at moving this to the camera script.
+    /// </summary>
+    /// <param name="saveId"></param>
 
     public void InitializeCamera(float rotationX, float rotationY, float camZDistance)
     {

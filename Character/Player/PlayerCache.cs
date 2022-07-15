@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PlayerDatabase
+public static class PlayerCache
 {
     private static Dictionary<long, Player> players;
     private static Player lastPlayedPlayer;
     private static List<Player> playerList;
 
-    static PlayerDatabase()
+    static PlayerCache()
     {
         players = new Dictionary<long, Player>();
 

@@ -5,14 +5,21 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     private RectTransform myRect;
     public TextMeshProUGUI itemDescription;
     public TextMeshProUGUI itemName;
     public Image itemImage;
     public ItemMouseOverTooltipController itemMouseOverTooltipController;
-    public Canvas canvas;
+    public Item item;
+    private ItemContextMenu itemContextMenu;
+    private Canvas canvas;
+
+    private void Awake()
+    {
+        canvas = this.GetComponentInParent<Canvas>();
+    }
 
     private void Start()
     {
@@ -35,17 +42,35 @@ public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         itemMouseOverTooltipController.Deactivate();
     }
 
-    public void SetItem(Item newitem, ItemMouseOverTooltipController itemMouseOverTooltipController, Canvas canvas)
+    public void OnPointerClick(PointerEventData pointerEventData)
     {
-        this.canvas = canvas;
-        this.itemMouseOverTooltipController = itemMouseOverTooltipController;
-        this.itemDescription.text = LanguageController.GetPhrase(newitem.descriptionIdentifier);
-        this.itemName.text = LanguageController.GetPhrase(newitem.nameIdentifier);
-
-        if (newitem.icon != null)
+        if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
-            this.itemImage.sprite = Resources.Load<Sprite>(Item.iconDirectory+ newitem.icon);
-        }
+            var itemContextMenuRect = itemContextMenu.GetComponent<RectTransform>();
+            float offsetX = 5f;
+            float offsetY = 5;
+            Debug.Log("Width:"+ itemContextMenuRect.rect.width);
+            float xPos = (pointerEventData.position.x /  canvas.scaleFactor) + (itemContextMenuRect.rect.width/2) + offsetX;
+            float yPos = pointerEventData.position.y / canvas.scaleFactor + (itemContextMenuRect.rect.height / 2) + offsetY;
 
+            Debug.Log(pointerEventData.position);
+            
+            itemContextMenuRect.anchoredPosition = new Vector2(xPos, yPos);
+            itemContextMenu.gameObject.SetActive(true);
+        }
+    }
+
+    public void SetItem(Item item, InventoryPanel inventoryPanel)
+    {
+        this.item = item;
+        this.itemMouseOverTooltipController = inventoryPanel.itemMouseOverTooltipController;
+        this.itemDescription.text = LanguageController.GetPhrase(item.descriptionIdentifier);
+        this.itemName.text = LanguageController.GetPhrase(item.nameIdentifier);
+        this.itemContextMenu = inventoryPanel.itemContextMenu;
+
+        if (item.icon != null)
+        {
+            this.itemImage.sprite = Resources.Load<Sprite>(Constants.itemIconDirectory + "/" + item.icon);
+        }
     }
 }

@@ -5,8 +5,9 @@ using UnityEngine;
 /// <summary>
 /// Basic ranged attack with a bow and arrow
 /// </summary>
-public class BasicRangedAttack : AbilityScript
+public class BasicRangedAttack //: AbilityScript
 {
+    /*
     public Ability abilityRef;
 
     private TimerManager timerManager;
@@ -203,4 +204,5 @@ public class BasicRangedAttack : AbilityScript
         //regardless of whether you hit a character unsubscribe event
         arrowComponent.colliderHitEvent -= DetectCharacter;
     }
+    */
 }

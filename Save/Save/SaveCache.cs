@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class SaveDatabase
+public static class SaveCache
 {
     private static Dictionary<long, Save> saves = new Dictionary<long, Save>();
-    static SaveDatabase()
+    static SaveCache()
     {
         var saveRepository = new SaveRepository();
 

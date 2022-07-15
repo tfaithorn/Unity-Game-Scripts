@@ -255,6 +255,7 @@ public class StatsController : MonoBehaviour
         updateHealthEvent?.Invoke(GetStatValue(StatType.CURR_HEALTH), GetStatValue(StatType.MAX_HEALTH));
         updateEnergyEvent?.Invoke(GetStatValue(StatType.CURR_ENERGY), GetStatValue(StatType.MAX_ENERGY));
 
+        /*
         //for testing
         var characterMb = this.gameObject.GetComponent<CharacterMB>();
 
@@ -262,6 +263,7 @@ public class StatsController : MonoBehaviour
         buffOptions.duration = 5;
 
         ApplyBuff(BuffDictionary.buffs[1], characterMb, characterMb, buffOptions);
+        */
     }
 
     private void InitialiseStats()

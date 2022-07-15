@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityRepository : DbRepository, IRepository<Ability>
+public class AbilityRepository //: DbRepository, IRepository<Ability>
 {
+    /*
     const string tableName = "ability";
     const string fields = "*";
     const string tableJoins = "";
@@ -62,4 +63,5 @@ public class AbilityRepository : DbRepository, IRepository<Ability>
 
         return abilities;
     }
+    */
 }

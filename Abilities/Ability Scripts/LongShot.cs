@@ -7,6 +7,22 @@ using UnityEngine;
 /// </summary>
 public class LongShot : AbilityScript
 {
+    public override float GetDuration(CharacterMB characterMB)
+    {
+        return 5;
+    }
+
+    public override float GetCooldown(CharacterMB characterMB)
+    {
+        return 10;
+    }
+
+    public override bool GetInterruptable(CharacterMB characterMB)
+    {
+        return false;
+    }
+
+    /*
     private TimerManager timerManager;
     private Reticle reticle;
     private PoolingHelper arrowPoolingHelper;
@@ -55,27 +71,6 @@ public class LongShot : AbilityScript
         cameraTransform = playerCharacterController.cam;
         cameraAnchor = playerCharacterController.camAnchor.transform;
         arrowPoolingHelper.Initialize(arrow, 20, "Long Shot Pool");
-    }
-
-    private void Update()
-    {
-        /*
-        if (pollForKeyRelease)
-        {
-            isCasting = false;
-        }
-        */
-    }
-
-    private void LateUpdate()
-    {
-        /*
-        if (!isCasting && pollForKeyRelease)
-        {
-            ReleaseArrow();
-            pollForKeyRelease = false;
-        }
-        */
     }
 
     public override void StartAbility()
@@ -244,4 +239,5 @@ public class LongShot : AbilityScript
         Debug.Log("Damage Applying!");
 
     }
+*/
 }

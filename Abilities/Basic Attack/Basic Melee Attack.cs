@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicMeleeAttack : BasicAttack
+public class BasicMeleeAttack //: BasicAttack
 {
+    /*
     private Ability abilityRef;
     //private InventoryController inventoryController;
     private HitColliderHelper hitWeaponGroup;
@@ -74,5 +75,5 @@ public class BasicMeleeAttack : BasicAttack
     {
         Debug.Log("Test Cast");
     }
-
+    */
 }

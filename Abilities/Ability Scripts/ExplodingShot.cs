@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ExplodingShot : AbilityScript
+public class ExplodingShot // : AbilityScript
 {
+    /*
     private MovementController movementController;
     private UIController uIController;
     private Reticle reticle;
@@ -215,5 +216,5 @@ public class ExplodingShot : AbilityScript
         // arrowPoolingHelper.ReturnToPoolAfter(arrowObj,10f);
     }
 
-
+    */
 }

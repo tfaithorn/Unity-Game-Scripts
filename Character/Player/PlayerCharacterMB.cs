@@ -9,15 +9,14 @@ public class PlayerCharacterMB : CharacterMB
     public Transform cam;
     public CameraAnchor camAnchor;
     public CameraScript cameraScript;
-    public AbilityController abilityController;
     public AnimationController animationController;
     private MovementController movementController;
     private bool allowAbilities = false;
     private bool allowMovement = false;
     private bool allowIdle = false;
     private SaveController saveController;
-    public Dictionary<KeybindsController.KeyType, Ability> abilityKeys;
-    public Dictionary<KeybindsController.KeyType, InputAction> keybinds;
+    //public Dictionary<KeybindsController.KeyType, Ability> abilityKeys;
+    //public Dictionary<KeybindsController.KeyType, InputAction> keybinds;
 
     private Ability abilityHeld;
 
@@ -39,15 +38,10 @@ public class PlayerCharacterMB : CharacterMB
         base.Awake();
         this.animationController = GetComponent<AnimationController>();
         this.movementController = GetComponent<MovementController>();
-        this.abilityController = GetComponent<AbilityController>();
         this.statsController = GetComponent<StatsController>();
         this.keybindsController = GetComponent<KeybindsController>();
         this.inventory = GetComponent<InventoryController>();
         this.saveController = SaveController.FindSaveController();
-
-        if (saveController != null) {
-            saveController.LoadPlayerCharacter(this);   
-        }
     }
 
     public void Initialise(Player player)
@@ -58,8 +52,7 @@ public class PlayerCharacterMB : CharacterMB
 
     private void Start()
     {
-        abilityKeys = keybindsController.abilityKeys;
-        keybinds = keybindsController.keybinds;
+
     }
 
     private void Update()
@@ -154,15 +147,13 @@ public class PlayerCharacterMB : CharacterMB
 
         if (abilityController.StartAbility(ability))
         {
-            Debug.Log("Gets to held?");
             abilityHeld = ability;
         }
     }
 
     public void EndedKeyPress(KeybindsController.KeyType keyType)
     {
-
-        if (abilityKeys[keyType] == abilityHeld)
+        if (keybindsController.abilityKeys[keyType] == abilityHeld)
         {
             abilityController.ReleaseAbility();
             abilityHeld = null;

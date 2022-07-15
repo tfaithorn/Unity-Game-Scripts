@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemDatabase
+public static class ItemCache
 {
     /// <summary>
     /// Loads all items into a dictionary at run time for easy access
     /// </summary>
-    static ItemDatabase()
+    /// 
+    private static Dictionary<long, Item> items;
+
+    static ItemCache()
     {
+        items = new Dictionary<long, Item>() { };
         var itemRepository = new ItemRepository();
         var itemsAsList = itemRepository.GetByCriteria();
 
@@ -18,7 +22,15 @@ public class ItemDatabase
         }
     }
 
-    public static Dictionary<long, Item> items = new Dictionary<long, Item>() {
-        
-    };
+    public static Item GetItem(long id)
+    {
+        if (items.ContainsKey(id))
+        {
+            return items[id];
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

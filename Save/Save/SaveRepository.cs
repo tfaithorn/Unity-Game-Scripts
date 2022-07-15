@@ -14,7 +14,8 @@ public class SaveRepository : DbRepository, IRepository<Save>
                     save.sceneId AS sceneId,
                     p.name AS playerName,
                     p.id AS playerId,
-                    p.lastPlayed AS lastPlayed";
+                    p.lastPlayed AS lastPlayed,
+                    save.isSystem";
 
     const string tableJoins = @"JOIN player p ON p.id = save.playerId";
     string orderBy = "createdAt DESC";
@@ -47,6 +48,7 @@ public class SaveRepository : DbRepository, IRepository<Save>
             { "createdAt", SqlClient.Function.CURRENT_TIMESTAMP},
             { "saveData", save.saveData},
             { "sceneId", save.sceneId},
+            { "isSystem", save.isSystem}
         };
 
         var criteria = new List<SqlClient.Expr>()
@@ -67,7 +69,7 @@ public class SaveRepository : DbRepository, IRepository<Save>
         return GetByCriteria(criteria)[0];
     }
 
-    public Save NewSave(long playerId, string name, string saveData, long sceneId)
+    public Save NewSave(long playerId, string name, string saveData, long sceneId, bool isSystem, long parentId)
     {
         //Note: This should really be done in a transaction with the saveCharacter data
         var saveValues = new Dictionary<string, object>()
@@ -75,7 +77,9 @@ public class SaveRepository : DbRepository, IRepository<Save>
             { "playerId", playerId},
             { "name", name},
             { "saveData", saveData},
-            { "sceneId", sceneId}
+            { "sceneId", sceneId},
+            { "isSystem", isSystem},
+            { "parentId", parentId}
         };
 
         var saveId = Insert(saveValues, true);
@@ -89,12 +93,25 @@ public class SaveRepository : DbRepository, IRepository<Save>
 
     public long GetLatestSaveIdForScene(long sceneId, long playerId)
     {
+        //add recursive logic
         var criteria = new List<SqlClient.Expr>()
         {
             new SqlClient.Cond("playerId", playerId, SqlClient.OP_EQUAL),
             new SqlClient.Cond("sceneId", sceneId, SqlClient.OP_EQUAL),
         };
 
+        var sql = @"WITH ancestor AS (
+                      SELECT save.*, IIF(save.sceneId=3,true,false) AS condition
+                      FROM save 
+                      WHERE 
+                        save.id = 227 
+                      UNION ALL
+                      SELECT save.*, IIF(save.sceneId=3,true,false) AS condition
+                      FROM save
+                      JOIN ancestor ON ancestor.parentId = save.id 
+                    )
+                    SELECT * FROM ancestor";
+        /*
         var sql = @"SELECT 
                         * 
                     FROM save 
@@ -102,6 +119,7 @@ public class SaveRepository : DbRepository, IRepository<Save>
                     ORDER BY 
 	                    createdAt DESC
                     LIMIT 1";
+        */
         var paramGroup = new SqlClient.ParamGroup();
         var preparedWhere = SqlClient.PrepareWhere(criteria, paramGroup);
         sql = SqlClient.ReplaceToken(sql, "criteria", preparedWhere);
@@ -130,9 +148,10 @@ public class SaveRepository : DbRepository, IRepository<Save>
                     (long)row["id"],
                     (string)row["name"],
                     (DateTime)row["createdAt"],
-                    PlayerDatabase.GetPlayer((long)row["playerId"]),
+                    PlayerCache.GetPlayer((long)row["playerId"]),
                     (string)row["saveData"],
-                    (long)row["sceneId"]
+                    (long)row["sceneId"],
+                    (bool)row["isSystem"]
                 )
             );
         }

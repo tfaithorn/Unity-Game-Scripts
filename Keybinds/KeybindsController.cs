@@ -9,14 +9,29 @@ using UnityEngine.Events;
 
 public class KeybindsController : MonoBehaviour
 {
-    public delegate void LookEvent(InputAction.CallbackContext ctx);
-    public event LookEvent lookEvent;
-
-    public delegate void EscEvent(InputAction.CallbackContext ctx);
+    public UnityEvent<InputAction.CallbackContext> lookEvent;
     public UnityEvent activateGameplay;
     public UnityEvent activateMenu;
+    public InputActionAsset inputActionAsset;
+    public bool keyBindTest = false;
+    public MenuController menuController;
+    public InputAction movementAction;
+    public InputAction lookAction;
+    public InputAction zoomAction;
+    public InputAction leftClickAction;
+    public InputAction rightClickAction;
+    public Dictionary<KeyType, InputAction> keybinds;
+    public UnityEvent<KeyType, Ability> abilityAddedKeyEvent;
+    public UnityEvent<InputAction.CallbackContext> mousePositionEvent;
 
-    public InputActionAsset inputActionAsset;   
+    private InputAction waitForInputAction = new InputAction(binding: "/*/<button>");
+    private string rebindInputEffectivePath;
+    private string rebindInputActualPath;
+    private int rebindInputBindingKeyID;
+    private AbilityController abilityController;
+    private PlayerCharacterMB playerCharacterController;
+    private CameraScript cameraScript;
+    private UIController uIController;
 
     //TO DO: look at json API for saving and reloading keybinds
     public enum KeyType
@@ -44,26 +59,6 @@ public class KeybindsController : MonoBehaviour
         MENU_LEFT_CLICK = 20
     }
 
-    private UIController uIController;
-
-    public bool keyBindTest = false;
-
-    private InputAction waitForInputAction = new InputAction(binding: "/*/<button>");
-    private string rebindInputEffectivePath;
-    private string rebindInputActualPath;
-    private int rebindInputBindingKeyID;
-
-    private AbilityController abilityController;
-    public MenuController menuController;
-    private PlayerCharacterMB playerCharacterController;
-    private CameraScript cameraScript;
-
-    public InputAction movementAction;
-    public InputAction lookAction;
-    public InputAction zoomAction;
-    public InputAction leftClickAction;
-    public InputAction rightClickAction;
-
     public Dictionary<KeyType, Ability> abilityKeys = new Dictionary<KeyType, Ability>() {
         {KeyType.LEFT_CLICK, null},
         {KeyType.RIGHT_CLICK, null},
@@ -79,17 +74,8 @@ public class KeybindsController : MonoBehaviour
         {KeyType.ABILITY_10, null}
     };
 
-    public Dictionary<KeyType, InputAction> keybinds;
-
-    public delegate void AbilityAdded(KeyType key, Ability ability);
-    public event AbilityAdded abilityAddedKeyEvent;
-
-    public delegate void MousePositionEvent(InputAction.CallbackContext ctx);
-    public event MousePositionEvent mousePositionEvent;
-
     private void Awake()
     {
-        //playerInput = GetComponent<PlayerInput>();
         cameraScript = GetComponent<CameraScript>();
         abilityController = GetComponent<AbilityController>();
         uIController = GetComponent<UIController>();
@@ -125,7 +111,6 @@ public class KeybindsController : MonoBehaviour
         inputActionAsset.FindActionMap("Gameplay").Enable();
         inputActionAsset.FindActionMap("Menu").Disable();
 
-
         activateGameplay = new UnityEvent();
         activateMenu = new UnityEvent();
 
@@ -150,6 +135,7 @@ public class KeybindsController : MonoBehaviour
         keybinds[KeyType.LOOK].performed += context => 
         {
             lookEvent?.Invoke(context);
+            //lookEvent?.Invoke(context);
         };
 
         keybinds[KeyType.TOGGLE_GAMEPLAY].performed += context =>

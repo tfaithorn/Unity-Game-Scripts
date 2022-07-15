@@ -10,6 +10,7 @@ using TMPro;
 public class SavePanelController : MonoBehaviour
 {
     public Camera cam;
+    public CameraScript cameraScript;
     public Image previewImage;
     public TextMeshProUGUI previewSummary;
     public List<SaveUIPrefab> saveUIPrefabs;
@@ -36,7 +37,7 @@ public class SavePanelController : MonoBehaviour
 
     public void Awake()
     {
-        playerList = PlayerDatabase.GetPlayerList();
+        playerList = PlayerCache.GetPlayerList();
         saveController = SaveController.FindSaveController();
         sceneController = SceneController.FindSceneController();
 
@@ -57,7 +58,7 @@ public class SavePanelController : MonoBehaviour
         }
         else
         {
-            selectedPlayer  = PlayerDatabase.GetLastPlayed();
+            selectedPlayer  = PlayerCache.GetLastPlayed();
         }
 
         switch (mode) {
@@ -132,8 +133,7 @@ public class SavePanelController : MonoBehaviour
     {
         SceneController sceneController = SceneController.FindSceneController();
         var sceneId = sceneController.currentSceneZone.GetSceneId();
-        Save save = saveController.SaveGame(saveName, sceneId, cam);
-        SaveScreenshot(save.id);
+        Save save = saveController.SaveGame(saveName, sceneId, cam, false);
         Init();
     }
 
@@ -146,7 +146,8 @@ public class SavePanelController : MonoBehaviour
     private void SetPlayerCharacterDropdown(Player currentPlayer = null)
     {
         List<string> options = new List<string>();
-
+        Debug.Log(playerList);
+        Debug.Log(currentPlayer);
         int i = 0;
         foreach (Player player in playerList)
         {
@@ -184,34 +185,6 @@ public class SavePanelController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Takes a screenshot using the main camera
-    /// Note: Look at moving this to the camera script.
-    /// </summary>
-    /// <param name="saveId"></param>
-    private void SaveScreenshot(long saveId)
-    {
-        int resHeight = Screen.height;
-        int resWidth = Screen.width;
-
-        RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
-        cam.targetTexture = rt;
-        Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
-        cam.Render();
-        RenderTexture.active = rt;
-        screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
-        cam.targetTexture = null;
-        RenderTexture.active = null; // JC: added to avoid errors
-        Destroy(rt);
-        byte[] bytes = screenShot.EncodeToPNG();
-        string filename = saveId + ".PNG";
-
-        string path = Application.streamingAssetsPath + "/" + Constants.saveScreenshotPath + "/" + filename;
-
-        System.IO.File.WriteAllBytes(path, bytes);
-        Debug.Log(string.Format("Took screenshot to: {0}", filename));
-    }
-
     public void ShowOverridePanel(Save save)
     {
         overrideSavePanel.gameObject.SetActive(true);
@@ -235,8 +208,6 @@ public class SavePanelController : MonoBehaviour
     }
     public void OverrideSave(Save save)
     {
-        
-
         saveController.OverrideSave(save, sceneController.currentSceneZone.GetSceneId());
         HideOverridePanel();
         Init();

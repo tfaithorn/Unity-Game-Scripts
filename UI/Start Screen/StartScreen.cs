@@ -10,6 +10,7 @@ public class StartScreen : MonoBehaviour
     public State state;
     public RectTransform settingsPanel;
     public RectTransform loadPanel;
+    public RectTransform newGameGroup;
     public LoadingScreen loadingScreen;
     List<RectTransform> menuPanels;
 
@@ -18,7 +19,8 @@ public class StartScreen : MonoBehaviour
     {
         menuPanels = new List<RectTransform>() {
             loadPanel,
-            settingsPanel
+            settingsPanel,
+            newGameGroup
         };
 
         loadingScreen.Init();
@@ -36,19 +38,19 @@ public class StartScreen : MonoBehaviour
         SETTINGS
     }
 
-    public void Continue()
-    {
-        
-        //sceneController.LoadScene(sceneController., StartingZone.nodeName1);
-        //sceneController.sceneOne.LoadScene(SceneOne.nodeName1);
-    }
-
     public void NewGame()
     {
-        var saveController = SaveController.FindSaveController();
-        var name = "Mr Grumpy Pants";
-        saveController.CreateNewPlayer(name);
-        sceneController.LoadScene(SceneZoneDatabase.GetSceneZone(2), StartingZone.nodeName1);
+        if (state != State.NEW_GAME)
+        {
+            DeactivateOtherPanels(newGameGroup);
+            newGameGroup.gameObject.SetActive(true);
+            state = State.NEW_GAME;
+        }
+        else
+        {
+            state = State.NONE;
+            newGameGroup.gameObject.SetActive(false);
+        }
     }
 
     public void LoadGame()

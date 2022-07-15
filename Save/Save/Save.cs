@@ -11,8 +11,8 @@ public class Save
     public string saveData;
     public string name;
     public long sceneId;
-
-    public Save(long id, string name, DateTime createdAt, Player player, string saveData, long sceneId)
+    public bool isSystem;
+    public Save(long id, string name, DateTime createdAt, Player player, string saveData, long sceneId, bool isSystem)
     {
         this.id = id;
         this.name = name;
@@ -20,5 +20,6 @@ public class Save
         this.player = player;
         this.saveData = saveData;
         this.sceneId = sceneId;
+        this.isSystem = isSystem;
     }
 }

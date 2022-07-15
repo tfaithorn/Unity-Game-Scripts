@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class AbilityScript : MonoBehaviour
 {
-    //flags to set to manipulate the ability & controller
+    //flags to set to manipulate ability behaviour at runtime
     public bool isChanneled;
     public bool isInterruptable;
     public bool allowMovement;
@@ -23,50 +23,47 @@ public abstract class AbilityScript : MonoBehaviour
         this.stopAbility = false;
         this.isPerformed = true;
         this.showAbility = true;
-        this.isInterruptable = true;
+        this.isInterruptable = false;
     }
+
+    public abstract float GetDuration(CharacterMB characterMB);
+    public abstract float GetCooldown(CharacterMB characterMB);
+    public abstract bool GetInterruptable(CharacterMB characterMB);
 
     /// <summary>
     /// Called when they ability is loaded on the gameobject
     /// </summary>
     /// <param name="ability"></param>
-    public abstract void LoadAbility(Ability ability);
-
-    /// <summary>
-    /// Called when the ability is added to your list of abilities
-    /// </summary>
-    /// <param name="ability"></param>
-    public abstract void AddAbility(Ability ability);
+    public virtual void LoadAbility(Ability ability){ }
 
     /// <summary>
     /// Called the first frame an ability is started
     /// </summary>
-    public abstract void StartAbility();
+    public virtual void StartAbility() { }
 
     /// <summary>
     /// Called each frame the ability is being held or cast
     /// </summary>
-    public abstract void PerformAbility();
+    public virtual void PerformAbility() { }
 
     /// <summary>
     /// Called the frame an ability finishes 
     /// </summary>
-    public abstract void FinishAbility();
+    public virtual void FinishAbility() { }
 
     /// <summary>
     /// Called to reset the parameters of an ability like when you are doing a combo and need to reset to the first move
     /// </summary>
-    public abstract void ResetAbility();
+    public virtual void ResetAbility() { }
 
     /// <summary>
     /// called when an ability is interrupted
     /// </summary>
 
-    public abstract void InterruptAbility();
+    public virtual void InterruptAbility() { }
 
     /// <summary>
     /// Called when a key is released
     /// </summary>
-    public abstract void ReleaseAbility();
-
+    public virtual void ReleaseAbility() { }
 }

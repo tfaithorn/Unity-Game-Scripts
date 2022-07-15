@@ -11,12 +11,12 @@ public class SceneController : MonoBehaviour
 
     void Awake()
     {
+        currentSceneZone = SceneZoneDatabase.GetSceneZone(1);
         saveController = GetComponent<SaveController>();
     }
 
     /// <summary>
-    /// Non-asynchronous method to start async load scene.
-    /// Note: This is to allow non-persistent scripts to call it, otherwise the corountine will never finish
+    /// Note: The non-async method is to allow non-persistent scripts to call it otherwise the corountine would never finish
     /// </summary>
     /// <param name="sceneZone"></param>
     /// <param name="nodeName"></param>
@@ -31,8 +31,14 @@ public class SceneController : MonoBehaviour
     /// <param name="sceneZone"></param>
     /// <param name="nodeName"></param>
     /// <returns></returns>
-    public IEnumerator LoadSceneAsync(SceneZone sceneZone, string nodeName = null)
+    public IEnumerator LoadSceneAsync(SceneZone sceneZone, string nodeName = null, PlayerCharacterMB playerCharacterMB = null)
     {
+        if (playerCharacterMB != null)
+        {
+            playerCharacterMB.keybindsController.lookAction = null;
+            saveController.SaveGame("Auto Save", sceneZone.GetSceneId(), playerCharacterMB.cam.GetComponent<Camera>(), true);
+        }
+
         var sceneName = sceneZone.GetSceneName();
         var progress = SceneManager.LoadSceneAsync(sceneName);
 
@@ -57,8 +63,7 @@ public class SceneController : MonoBehaviour
                     placeCharacterOptions.SetPosition(node.transform.position);
 
                     var go = PlaceCharacter(playerCharacter, placeCharacterOptions);
-                    saveController.playerCharacterMB = (PlayerCharacterMB)go;
-                    saveController.playerCharacterMB.Initialise(saveController.player);
+                    saveController.InitialisePlayerCharacter((PlayerCharacterMB)go);
                 }
             }
         }

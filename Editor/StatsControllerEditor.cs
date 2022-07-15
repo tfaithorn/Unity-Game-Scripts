@@ -66,7 +66,6 @@ public class StatsControllerEditor : Editor
     private void OnEnable()
     {
         physicalRes = serializedObject.FindProperty("baseStats");
-        Debug.Log(physicalRes);
     }
 
     public override void OnInspectorGUI()

@@ -12,9 +12,9 @@ public class InventoryPanel : MenuPanel
     public PlayerCharacterMB playerCharacterController;
     public ItemMouseOverTooltipController itemMouseOverTooltipController;
     public StatMouseOverTooltipController statMouseOverTooltipController;
+    public ItemContextMenu itemContextMenu;
     private InventoryController inventoryController;
     private StatsController statsController;
-
     public Slider healthSlider;
     public Slider energySlider;
 
@@ -53,13 +53,14 @@ public class InventoryPanel : MenuPanel
         }
     }
 
-    private void SetInventoryList(List<ItemCharacter> inventory)
+    private void SetInventoryList(List<ItemInstance> inventory)
     {
-        foreach (ItemCharacter itemCharacter in inventory)
+        foreach (ItemInstance itemInstance in inventory)
         {
             ItemUIPrefab itemUIPrefab = Resources.Load<ItemUIPrefab>("Prefabs/UI Prefabs/Item Panel");
-            itemUIPrefab.SetItem(itemCharacter.item, itemMouseOverTooltipController, canvas);
-            Instantiate(itemUIPrefab, inventoryListPanel);
+            //itemUIPrefab.SetItem(itemCharacter.item, this);
+            var instantiatedPref = Instantiate(itemUIPrefab, inventoryListPanel);
+            instantiatedPref.SetItem(itemInstance.item, this);
         }
     }
 

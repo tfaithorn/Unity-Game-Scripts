@@ -58,6 +58,7 @@ public class AbilityPanel : MonoBehaviour
         playerCharacterController = uIController.playerCharacterController;
         abilityController = playerCharacterController.abilityController;
         keybindController = playerCharacterController.keybindsController;
+        keybindController.abilityAddedKeyEvent.AddListener(AddAbilityImage);
 
         abilityUIinstances = new Dictionary<KeybindsController.KeyType, AbilityUIInstance>() {
             {KeybindsController.KeyType.ABILITY_1, new AbilityUIInstance(ability1Image,ability1Text, GenerateCooldownImage(ability1Image), null)},
@@ -75,12 +76,6 @@ public class AbilityPanel : MonoBehaviour
         };
     }
 
-    private void Start()
-    {
-        keybindController.abilityAddedKeyEvent += AddAbilityImage;
-
-    }
-
     public void UpdateImagesByAbility(Ability ability)
     {
         foreach (var instance in abilityUIinstances)
@@ -95,7 +90,6 @@ public class AbilityPanel : MonoBehaviour
     private void AddAbilityImage(KeybindsController.KeyType keyType, Ability ability)
     {
         abilityUIinstances[keyType].ability = ability;
-
         string iconPath = "Ability Icons/";
         Image img = GetImageByKey(keyType);
         img.gameObject.SetActive(true);

@@ -4,13 +4,13 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public class ItemCharacter
+public class ItemInstance
 {
     public Item item;
     public int equiptSlotId;
     public int quantity;
 
-    public ItemCharacter(Item item, int equiptSlotId, int quantity)
+    public ItemInstance(Item item, int equiptSlotId, int quantity)
     {
         this.item = item;
         this.equiptSlotId = equiptSlotId;

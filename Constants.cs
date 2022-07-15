@@ -12,6 +12,7 @@ public static class Constants
     public static readonly string saveScreenshotExtension = "png";
     public static readonly string persistentScriptsTagName = "Persistent Scripts";
     public static readonly string sceneNodeTagName = "SceneNode";
+    public static readonly string itemIconDirectory = "Item Icons";
 }
 
 

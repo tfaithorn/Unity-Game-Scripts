@@ -13,12 +13,11 @@ using UnityEngine.InputSystem;
 
 public class AbilityController : MonoBehaviour
 {
-    private Ability currentAbility;
-    private CharacterMB character;
-    private TimerManager timerManager;
+    private AbilityInstance currentAbilityInstance;
+    private CharacterMB characterMB;
 
-    public readonly List<Ability> abilitiesAvailable = new List<Ability>();
-    public readonly List<Ability> abilitiesLoaded = new List<Ability>(); 
+    public readonly Dictionary<Ability, AbilityInstance> abilities = new Dictionary<Ability, AbilityInstance>();
+    public List<AbilityInstance> abilitiesList = new List<AbilityInstance>();
 
     public bool performingAbility = false;
     public bool allowAbilities = true;
@@ -31,64 +30,46 @@ public class AbilityController : MonoBehaviour
 
     private void Awake()
     {
-        character = GetComponent<CharacterMB>();
-        timerManager = gameObject.GetComponent<TimerManager>();
-    }
-
-    private void Update()
-    {
-        if (performingAbility) 
-        {
-            if (currentAbility != null)
-            {
-                currentAbility.abilityScript.PerformAbility();
-
-                if ((!currentAbility.hasDuration || currentAbility.duration.finished)
-                && !currentAbility.abilityScript.isInfinite)
-                {
-                    FinishAbility();
-                }
-            }
-        }
+        characterMB = GetComponent<CharacterMB>();
     }
 
     public void AddAbility(Ability ability)
     {
-        
-        if (!abilitiesAvailable.Exists(x => x.id == ability.id))
+        if (!abilities.ContainsKey(ability))
         {
-            abilitiesAvailable.Add(ability);
+            var abilityInstance = new AbilityInstance(ability);
+            abilities.Add(ability, abilityInstance);
+            abilitiesList.Add(abilityInstance);
         }
-
-        ability.abilityScript.AddAbility(ability);
+        
         return;
     }
 
     public void LoadAbility(Ability ability)
     {
         //if ability script has not already been added
-        if (!gameObject.GetComponent(Type.GetType(ability.className)))
+        if (!gameObject.GetComponent(Type.GetType(ability.abilityScriptName)))
         {
-            gameObject.AddComponent(Type.GetType(ability.className));
-            ability.abilityScript = (AbilityScript)gameObject.GetComponent(Type.GetType(ability.className));
-            ability.abilityScript.LoadAbility(ability);
+            var abilityInstance = abilities[ability];
+            abilityInstance.abilityScript = (AbilityScript)gameObject.AddComponent(Type.GetType(ability.abilityScriptName));
+            abilityInstance.abilityScript.LoadAbility(ability);
+
+            abilityInstance.cooldown.endTime = abilityInstance.abilityScript.GetCooldown(characterMB);
+            abilityInstance.duration.endTime = abilityInstance.abilityScript.GetDuration(characterMB);
         }
 
-        if (!abilitiesLoaded.Exists(x => x.id == ability.id))
-        {
-            abilitiesLoaded.Add(ability);
-        }
+        abilities[ability].isLoaded = true;
         
         return;
     }
 
     public bool AbilityAllowsMovement()
     {
-        if (currentAbility != null && currentAbility.abilityScript.allowMovement)
+        if (currentAbilityInstance != null && currentAbilityInstance.abilityScript.allowMovement)
         {
             return true;
         }
-        else if (currentAbility == null) {
+        else if (currentAbilityInstance == null) {
             return true;
         }
         return false;
@@ -97,76 +78,89 @@ public class AbilityController : MonoBehaviour
     public void ResetAbility()
     {
         //not tested
-        currentAbility.duration.durationPassed = 0f;
-        currentAbility.abilityScript.ResetAbility();
+        currentAbilityInstance.duration.durationPassed = 0f;
+        currentAbilityInstance.abilityScript.ResetAbility();
     }
 
     public void InterruptAbility()
     {
-        //not tested
+        currentAbilityInstance.interruptAbility = true;
         performingAbility = false;
-        currentAbility.duration.durationPassed = 0f;
-        currentAbility.abilityScript.InterruptAbility();
-        currentAbility = null;
+        currentAbilityInstance.duration.durationPassed = 0f;
+        currentAbilityInstance.abilityScript.InterruptAbility();
+        currentAbilityInstance = null;
     }
 
     public void ReleaseAbility()
     {
-        if (currentAbility != null)
+        if (currentAbilityInstance != null)
         {
-            currentAbility.abilityScript.ReleaseAbility();
+            currentAbilityInstance.abilityScript.ReleaseAbility();
         }
     }
 
     public void FinishAbility()
     {
-        if (currentAbility.hasDuration)
-        {
-            timerManager.RemoveTimer(currentAbility.duration);
-        }
-        
         performingAbility = false;
-        currentAbility.abilityScript.FinishAbility();
-        abilityFinishedEvent?.Invoke(currentAbility);
-        currentAbility = null;
+        currentAbilityInstance.abilityScript.FinishAbility();
+        currentAbilityInstance = null;
     }
 
     public bool StartAbility(Ability ability)
     {
-
         //if you are are casting an interruptable ability finish it
-        if (currentAbility != null)
+        if (performingAbility)
         {
-            if (ability.abilityScript.isInterruptable)
+            if (currentAbilityInstance.abilityScript.isInterruptable)
             {
                 InterruptAbility();
             }
             else
             {
-                //otherwise prevent new ability from starting
                 return false;
             }
         }
 
-        //add cooldowns & duration to timer list
-        if (ability.hasCooldown)
-        {
+        var abilityInstance = abilities[ability];
+        currentAbilityInstance = abilities[ability];
 
-            timerManager.ResetTimer(ability.cooldown);
-            timerManager.AddTimer(ability.cooldown);
-        }
+        //add cooldown & duration timers
+        StartCoroutine(StartCooldownTimer(abilityInstance));
+        StartCoroutine(StartDurationTimer(abilityInstance));
 
-        if (ability.hasDuration)
-        {
-            timerManager.ResetTimer(ability.duration);
-            timerManager.AddTimer(ability.duration);
+        abilities[ability].abilityScript.StartAbility();
 
-        }
-        ability.abilityScript.StartAbility();
         performingAbility = true;
-        currentAbility = ability;
-        //abilityStartedEvent?.Invoke(ability);
 
         return true;
+    }
+
+    IEnumerator StartDurationTimer(AbilityInstance abilityInstance)
+    {
+
+        while (abilityInstance.duration.durationPassed < abilityInstance.duration.endTime)
+        {
+            //if ability is interrupted return without calling FinishAbility
+            if (abilityInstance.interruptAbility)
+            {
+                yield break;
+            }
+
+            abilityInstance.duration.durationPassed += Time.deltaTime;
+            yield return null;
+        }
+        FinishAbility();
+        abilityInstance.duration.durationPassed = 0;
+    }
+
+    IEnumerator StartCooldownTimer(AbilityInstance abilityInstance)
+    {
+        while (abilityInstance.cooldown.durationPassed < abilityInstance.cooldown.endTime)
+        {
+            abilityInstance.cooldown.durationPassed += Time.deltaTime;
+            yield return null;
+        }
+
+        abilityInstance.cooldown.durationPassed = 0;
     }
 }

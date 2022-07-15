@@ -5,20 +5,20 @@ using System.Linq;
 
 public class Inventory : MonoBehaviour
 {
-    protected List<ItemCharacter> inventory = new List<ItemCharacter>();
+    protected List<ItemInstance> inventory = new List<ItemInstance>();
     protected CharacterMB character;
 
     public void AddToInventory(Item item, int quantity = 1)
     {
-        ItemCharacter characterItem = inventory.SingleOrDefault(x => x.item.id == item.id);
+        ItemInstance characterItem = inventory.SingleOrDefault(x => x.item.id == item.id);
 
         //TODO, redo to not be stupid and put in stacklogic
-        inventory.Add(new ItemCharacter(item, 0, quantity));
+        inventory.Add(new ItemInstance(item, 0, quantity));
     }
 
-    public void AddToInventoryWithoutCheck(ItemCharacter itemCharacter)
+    public void AddToInventoryWithoutCheck(ItemInstance itemInstance)
     {
-        inventory.Add(itemCharacter);
+        inventory.Add(itemInstance);
     }
 
     /// <summary>
@@ -27,11 +27,11 @@ public class Inventory : MonoBehaviour
     /// <param name="item"></param>
     public void RemoveFromInventory(Item item)
     {
-        ItemCharacter itemCharacter = inventory.SingleOrDefault(x => x.item.id == item.id);
-        inventory.Add(itemCharacter);
+        ItemInstance itemInstance = inventory.SingleOrDefault(x => x.item.id == item.id);
+        inventory.Add(itemInstance);
     }
 
-    public List<ItemCharacter> GetInventory()
+    public List<ItemInstance> GetItems()
     {
         return this.inventory;
     }
@@ -49,7 +49,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public List<ItemCharacter> GetByType(ItemCategory.CategoryType itemCategory)
+    public List<ItemInstance> GetByType(ItemCategory.CategoryType itemCategory)
     {
         if (itemCategory == ItemCategory.CategoryType.NONE)
         {

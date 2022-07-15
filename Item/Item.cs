@@ -11,8 +11,6 @@ public class Item
     public float value;
     public bool stackable;
     public string icon;
-
-    public const string iconDirectory = "Item Icons/";
     public Item(){}
 
     public Item(Item item) 

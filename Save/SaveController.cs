@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 using UnityEngine;
 using System;
 using System.Linq;
@@ -12,16 +13,28 @@ public class SaveController : MonoBehaviour
     {
         public CharacterSaveData characterSaveData;
         public CameraSaveData cameraSaveData;
-
-        public PlayerSaveData(CharacterSaveData characterSaveData, CameraSaveData cameraSaveData)
+        public AbilityKeySaveData abilityKeySaveData;
+        public PlayerSaveData(CharacterSaveData characterSaveData, CameraSaveData cameraSaveData, AbilityKeySaveData abilityKeySaveData)
         {
             this.characterSaveData = characterSaveData;
             this.cameraSaveData = cameraSaveData;
+            this.abilityKeySaveData = abilityKeySaveData;
         }
     }
 
     [Serializable]
     private class CameraSaveData
+    {
+        public CameraSave[] cameraSaves;
+
+        public CameraSaveData(CameraSave[] cameraSaves)
+        {
+            this.cameraSaves = cameraSaves;
+        }
+    }
+
+    [Serializable]
+    private class CameraSave
     {
         public TransformSaveData cameraAnchorTransform;
         public TransformSaveData cameraTransform;
@@ -29,7 +42,7 @@ public class SaveController : MonoBehaviour
         public float cameraRotationY;
         public float cameraDistance;
 
-        public CameraSaveData(TransformSaveData cameraAnchorTransform, TransformSaveData cameraTransform, float cameraRotationX, float cameraRotationY, float cameraDistance)
+        public CameraSave(TransformSaveData cameraAnchorTransform, TransformSaveData cameraTransform, float cameraRotationX, float cameraRotationY, float cameraDistance)
         {
             this.cameraAnchorTransform = cameraAnchorTransform;
             this.cameraTransform = cameraTransform;
@@ -42,23 +55,23 @@ public class SaveController : MonoBehaviour
     [Serializable]
     private class CharacterSaveData
     {
-        public long id;
-        public string uuid;
+        public string guid;
         public TransformSaveData transformSaveData;
         public BuffSaveData buffSaveData;
         public ItemSaveData itemSaveData;
-        public CharacterSaveData(long id, string uuid, BuffSaveData buffSaveData, TransformSaveData transformSaveData, ItemSaveData itemSaveData)
+        public AbilitySaveData abilitySaveData;
+        public CharacterSaveData(string guid, BuffSaveData buffSaveData, TransformSaveData transformSaveData, ItemSaveData itemSaveData, AbilitySaveData abilitySaveData)
         {
-            this.id = id;
-            this.uuid = uuid;
+            this.guid = guid;
             this.buffSaveData = buffSaveData;
             this.transformSaveData = transformSaveData;
             this.itemSaveData = itemSaveData;
+            this.abilitySaveData = abilitySaveData;
         }
     }
 
     [Serializable]
-    private struct TransformSaveData
+    private class TransformSaveData
     {
         public float x;
         public float y;
@@ -67,6 +80,17 @@ public class SaveController : MonoBehaviour
         public float rotationY;
         public float rotationZ;
         public float rotationW;
+
+        public TransformSaveData(float x, float y, float z, float rotationX, float rotationY, float rotationZ, float rotationW)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.rotationX = rotationX;
+            this.rotationY = rotationY;
+            this.rotationZ = rotationZ;
+            this.rotationW = rotationW;
+        }
     }
 
     [Serializable]
@@ -98,49 +122,121 @@ public class SaveController : MonoBehaviour
     [Serializable]
     private class ItemSave
     {
-        public long id;
+        public long itemId;
         public int equiptSlotId;
         public int quantity;
 
-        public ItemSave(long id, int equiptSlotId, int quantity)
+        public ItemSave(long itemId, int equiptSlotId, int quantity)
         {
-            this.id = id;
+            this.itemId = itemId;
             this.equiptSlotId = equiptSlotId;
             this.quantity = quantity;
         }
     }
 
+    [Serializable]
+    private class AbilitySaveData 
+    { 
+        public AbilitySave[] abilitySaves;
+
+        public AbilitySaveData(AbilitySave[] abilitySaves)
+        {
+            this.abilitySaves = abilitySaves;
+        }
+    }
+
+    [Serializable]
+    private class AbilitySave 
+    {
+        public long abilityId;
+        public bool isLoaded;
+        public SaveTimer cooldownTimer;
+        public SaveTimer durationTimer;
+
+        public AbilitySave(long abilityId, bool isLoaded, SaveTimer cooldownTimer, SaveTimer durationTimer)
+        {
+            this.abilityId = abilityId;
+            this.isLoaded = isLoaded;
+            this.cooldownTimer = cooldownTimer;
+            this.durationTimer = durationTimer;
+        }
+    }
+
+    [Serializable]
+    private class AbilityKeySaveData
+    {
+        public AbilityKeySave[] abilityKeySaves;
+
+        public AbilityKeySaveData(AbilityKeySave[] abilityKeySaves)
+        {
+            this.abilityKeySaves = abilityKeySaves;
+        }
+    }
+
+    [Serializable]
+    private class AbilityKeySave
+    { 
+        public string keyNum;
+        public long abilityId;
+
+        public AbilityKeySave(string keyNum, long abilityId)
+        {
+            this.keyNum = keyNum;
+            this.abilityId = abilityId;
+        }
+    }
+
+    [Serializable]
+    private class SaveTimer 
+    {
+        public float durationPassed;
+        public float endTime;
+
+        public SaveTimer(float durationPassed, float endTime)
+        {
+            this.durationPassed = durationPassed;
+            this.endTime = endTime;
+        }
+    }
+
     SceneController sceneController;
-    Dictionary<KeybindsController.KeyType, Ability> abilityKeys;
-    Dictionary<KeybindsController.KeyType, InputAction> keybinds;
     List<Character> charactersLoadedInScene;
-    public Save currentSave;
+    public bool isNewPlayer = false;
+    public Save lastSave;
     public Player player;
     public PlayerCharacterMB playerCharacterMB;
 
     public void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-
+        //DontDestroyOnLoad(this.gameObject);
         sceneController = GetComponent<SceneController>();
         charactersLoadedInScene = new List<Character>();
     }
 
-    public void CreateNewPlayer(string name)
+    public void CreateNewPlayer(string name, List<ItemInstance> inventory, List<AbilityInstance> abilities, Dictionary<KeybindsController.KeyType, Ability> abilityKeys)
     {
         var playerRepository = new PlayerRepository();
         this.player = playerRepository.AddNewPlayer(name);
+        PlayerCache.AddNewPlayer(this.player);
+
+        //The below creates a save for the player in the starting scene and then load the scene
+        ItemSaveData itemSaveData = GenerateItemSaveData(inventory);
+        TransformSaveData transformSaveData = new TransformSaveData(0,0,-10,0,0,0,0);
+        AbilitySaveData abilitySaveData = GenerateAbilitySaveData(abilities);
+        BuffSaveData buffSaveData = GenerateBuffSaveData(new List<BuffInstance>());
+        CharacterSaveData characterSaveData = new CharacterSaveData(Guid.NewGuid().ToString(), null, transformSaveData,itemSaveData, abilitySaveData);
+        AbilityKeySaveData abilityKeySaveData = GenerateAbilityKeySaveData(abilityKeys);
+        PlayerSaveData playerSaveData = new PlayerSaveData(characterSaveData, null, abilityKeySaveData);
+
+        string saveData = JsonUtility.ToJson(playerSaveData);
+        var saveRepository = new SaveRepository();
+        var save = saveRepository.NewSave(this.player.id, "Auto Save", saveData, 2, true, 0);
+        StartCoroutine(LoadSaveAsync(save));
     }
 
     public void SetPlayerIdentity(Player player)
     {
         playerCharacterMB.Initialise(player);
-    }
-
-    public void LoadPlayerCharacter(PlayerCharacterMB playerCharacterController)
-    {
-        LoadCharacterAbilities(playerCharacterController);
-        LoadCharacterItems(playerCharacterController);
     }
 
     /// <summary>
@@ -153,6 +249,12 @@ public class SaveController : MonoBehaviour
         StartCoroutine(LoadSaveAsync(save));
     }
 
+    public void InitialisePlayerCharacter(PlayerCharacterMB playerCharacterMB)
+    {
+        playerCharacterMB.Initialise(player);
+        this.playerCharacterMB = playerCharacterMB;
+    }
+
     private IEnumerator LoadSaveAsync(Save save)
     {
         //pause time
@@ -161,8 +263,8 @@ public class SaveController : MonoBehaviour
         var saveRepository = new SaveRepository();
         var saveData = JsonUtility.FromJson<PlayerSaveData>(save.saveData);
         var transformSaveData = saveData.characterSaveData.transformSaveData;
-        var cameraSaveData = saveData.cameraSaveData;
-        Vector3 playerPosition = new Vector3(transformSaveData.x, transformSaveData.y, transformSaveData.z);
+
+        CameraSaveData cameraSaveData = null;
 
         SceneZone sceneZone = SceneZoneDatabase.GetSceneZone(save.sceneId);
         yield return StartCoroutine(sceneController.LoadSceneAsync(sceneZone));
@@ -172,26 +274,36 @@ public class SaveController : MonoBehaviour
         placeCharacterOptions.SetPosition(new Vector3(transformSaveData.x, transformSaveData.y, transformSaveData.z));
         placeCharacterOptions.SetRotation(new Quaternion(transformSaveData.rotationX, transformSaveData.rotationY, transformSaveData.rotationZ, transformSaveData.rotationW));
         this.playerCharacterMB = (PlayerCharacterMB)sceneController.PlaceCharacter(playerMbGameObject, placeCharacterOptions);
-        
-        //set camera anchor transform
-        this.playerCharacterMB.camAnchor.transform.position = new Vector3(cameraSaveData.cameraAnchorTransform.x, cameraSaveData.cameraAnchorTransform.y, cameraSaveData.cameraAnchorTransform.z);
-        this.playerCharacterMB.camAnchor.transform.rotation = new Quaternion(cameraSaveData.cameraAnchorTransform.rotationX, cameraSaveData.cameraAnchorTransform.rotationY, cameraSaveData.cameraAnchorTransform.rotationZ, cameraSaveData.cameraAnchorTransform.rotationW);
 
-        //Set camera transform
-        this.playerCharacterMB.cam.position = new Vector3(cameraSaveData.cameraTransform.x, cameraSaveData.cameraTransform.y, cameraSaveData.cameraTransform.z);
-        this.playerCharacterMB.cam.rotation = new Quaternion(cameraSaveData.cameraTransform.rotationX, cameraSaveData.cameraTransform.rotationY, cameraSaveData.cameraTransform.rotationZ, cameraSaveData.cameraTransform.rotationW);
+        if (saveData.cameraSaveData.cameraSaves.Length > 0)
+        {
+            cameraSaveData = saveData.cameraSaveData;
+            //set camera anchor transform
+            this.playerCharacterMB.camAnchor.transform.position = new Vector3(cameraSaveData.cameraSaves[0].cameraAnchorTransform.x, cameraSaveData.cameraSaves[0].cameraAnchorTransform.y, cameraSaveData.cameraSaves[0].cameraAnchorTransform.z);
+            this.playerCharacterMB.camAnchor.transform.rotation = new Quaternion(cameraSaveData.cameraSaves[0].cameraAnchorTransform.rotationX, cameraSaveData.cameraSaves[0].cameraAnchorTransform.rotationY, cameraSaveData.cameraSaves[0].cameraAnchorTransform.rotationZ, cameraSaveData.cameraSaves[0].cameraAnchorTransform.rotationW);
 
-        //set cameraScript variables
-        this.playerCharacterMB.cameraScript.InitializeCamera(cameraSaveData.cameraRotationX, cameraSaveData.cameraRotationY, cameraSaveData.cameraDistance);
+            //Set camera transform
+            this.playerCharacterMB.cam.position = new Vector3(cameraSaveData.cameraSaves[0].cameraTransform.x, cameraSaveData.cameraSaves[0].cameraTransform.y, cameraSaveData.cameraSaves[0].cameraTransform.z);
+            this.playerCharacterMB.cam.rotation = new Quaternion(cameraSaveData.cameraSaves[0].cameraTransform.rotationX, cameraSaveData.cameraSaves[0].cameraTransform.rotationY, cameraSaveData.cameraSaves[0].cameraTransform.rotationZ, cameraSaveData.cameraSaves[0].cameraTransform.rotationW);
+
+            //set cameraScript variables
+            this.playerCharacterMB.cameraScript.InitializeCamera(cameraSaveData.cameraSaves[0].cameraRotationX, cameraSaveData.cameraSaves[0].cameraRotationY, cameraSaveData.cameraSaves[0].cameraDistance);
+        }
 
         //Load initialise the player character
         this.player = save.player;
         this.playerCharacterMB.Initialise(this.player);
 
-        //Load characters in the scene that have data
-        LoadNpcCharactersForScene(SceneZoneDatabase.GetSceneZone(save.sceneId));
+        LoadCharacterItems(this.playerCharacterMB, saveData.characterSaveData.itemSaveData);
+        LoadCharacterAbilities(this.playerCharacterMB, saveData.characterSaveData.abilitySaveData);
+        LoadPlayerAbilityKeys(this.playerCharacterMB, saveData.abilityKeySaveData.abilityKeySaves);
 
-        //resume time
+        //Load characters in the scene that have data
+        LoadNpcCharactersForScene(save);
+
+        lastSave = save;
+
+        //resume time using the ingame menu (will also toggle menu off)
         MenuController menuController = GameObject.FindObjectOfType<MenuController>();
 
         if (menuController)
@@ -200,42 +312,71 @@ public class SaveController : MonoBehaviour
         }
     }
 
-    private void LoadCharacterAbilities(PlayerCharacterMB playerCharacterController)
+    private void LoadPlayerAbilityKeys(PlayerCharacterMB playerCharacterMB, AbilityKeySave[] abilityKeySaves)
     {
-        AbilityRepository abilityRepository = new AbilityRepository();
-        var abilities = abilityRepository.GetByCriteria(new List<SqlClient.Expr>() { new SqlClient.Cond("id", new long[] {5,7}, SqlClient.OP_IN) });
-
-        Ability longShot = abilities[0];
-        Ability explodingShot = abilities[1];
-        Debug.Log(longShot.icon);
-        playerCharacterController.AddAbility(longShot, KeybindsController.KeyType.RIGHT_CLICK);
-        playerCharacterController.AddAbility(explodingShot, KeybindsController.KeyType.ABILITY_2);
-
-        abilityKeys = playerCharacterController.keybindsController.abilityKeys;
-        keybinds = playerCharacterController.keybindsController.keybinds;
-
-        playerCharacterController.abilityKeys = abilityKeys;
-        playerCharacterController.keybinds = keybinds;
+        foreach (var abilityKeySave in abilityKeySaves)
+        {
+            switch (abilityKeySave.keyNum)
+            {
+                case "1":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_1, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "2":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_2, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "3":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_3, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "4":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_4, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "5":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_5, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "6":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_6, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "7":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_7, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "8":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_8, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "9":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_9, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+                case "10":
+                    playerCharacterMB.keybindsController.AddAbilityKey(KeybindsController.KeyType.ABILITY_10, AbilityCache.GetAbility(abilityKeySave.abilityId));
+                    break;
+            }
+        }
     }
 
-    private void LoadCharacterItems(CharacterMB characterMB)
+    private void LoadCharacterAbilities(CharacterMB characterMB, AbilitySaveData abilitySaveData)
     {
-        Inventory characterInventory = characterMB.GetComponent<Inventory>();
+        AbilityController abilityController = characterMB.abilityController;
 
-        if (characterInventory != null)
+        foreach (AbilitySave abilitySave in abilitySaveData.abilitySaves)
         {
-            var criteria = new List<SqlClient.Expr>()
+            abilityController.AddAbility(AbilityCache.GetAbility(abilitySave.abilityId));
+
+            if (abilitySave.isLoaded)
             {
-                new SqlClient.Cond("characterId", characterMB.id, SqlClient.OP_EQUAL)
-            };
+                abilityController.LoadAbility(AbilityCache.GetAbility(abilitySave.abilityId));
+            }
+        }
+    }
 
-            ItemCharacterRepository itemCharacterRepository = new ItemCharacterRepository();
+    private void LoadCharacterItems(CharacterMB characterMB, ItemSaveData itemSaveData)
+    {
+        Inventory inventory = characterMB.inventory;
 
-            var inventory = itemCharacterRepository.GetByCriteria(criteria);
-
-            foreach (ItemCharacter itemCharacter in inventory)
+        if (inventory != null)
+        {
+            foreach (ItemSave itemSave in itemSaveData.itemSaves)
             {
-                characterInventory.AddToInventoryWithoutCheck(itemCharacter);
+                var itemInstance = new ItemInstance(ItemCache.GetItem(itemSave.itemId), itemSave.equiptSlotId, itemSave.quantity);
+                inventory.AddToInventoryWithoutCheck(itemInstance);
             }
         }
     }
@@ -269,10 +410,10 @@ public class SaveController : MonoBehaviour
         Save updatedSave = saveRepository.GetSaveById(save.id);
     }
 
-    private void LoadNpcCharactersForScene(SceneZone sceneZone)
+    private void LoadNpcCharactersForScene(Save save)
     {        
         var saveCharacterRepository = new SaveCharacterRepository();
-        var saveCharacters = saveCharacterRepository.LoadNpcCharactersForScene(sceneZone.GetSceneId(), this.playerCharacterMB.id);
+        var saveCharacters = saveCharacterRepository.LoadNpcCharactersForSave(save);
 
         List<NpcCharacterMB> npcCharactersInScene = GameObject.FindObjectsOfType<NpcCharacterMB>().ToList();
 
@@ -288,7 +429,7 @@ public class SaveController : MonoBehaviour
                 if (replaceCharacter)
                 {
                     GameObject.Destroy(characterInScene);
-                    Debug.Log("Character did reload!" + saveCharacter.guid);
+
                     //Instantiate the character in the scene
                     var npcCharacter = Resources.Load<NpcCharacterMB>(Constants.characterModelPath + "/" + saveCharacter.character.prefabPath);
                     var saveData = JsonUtility.FromJson<CharacterSaveData>(saveCharacter.saveData);
@@ -299,7 +440,6 @@ public class SaveController : MonoBehaviour
                     sceneController.PlaceCharacter(npcCharacter, placeCharacterOptions);
                 }
             }
-            
         }
     }
 
@@ -315,14 +455,45 @@ public class SaveController : MonoBehaviour
             saveCharacterRepository.SaveCharacter(jsonSaveData, npcCharacter.id, saveId, sceneId, npcCharacter.guid);
         }
     }
-    /*
-    /// <summary>
-    /// Note: Move this to camera script
-    /// </summary>
-    /// <param name="saveId"></param>
-    /// <param name="cam"></param>
-    /// 
-    private void SaveScreenshot(long saveId, Camera cam)
+
+    private PlayerSaveData GeneratePlayerSaveData(PlayerCharacterMB playerCharacterMB)
+    {
+        var characterSaveData = GenerateCharacterSaveData(playerCharacterMB);
+        var cameraSaveData = GenerateCameraSaveData(playerCharacterMB);
+        var abilityKeySaveData = GenerateAbilityKeySaveData(playerCharacterMB.keybindsController.abilityKeys);
+        return new PlayerSaveData(characterSaveData, cameraSaveData, abilityKeySaveData);
+    }
+    public Save SaveGame(string saveName, long sceneId, Camera cam, bool isSystem)
+    {
+        var saveRepository = new SaveRepository();
+        var saveData = GeneratePlayerSaveData(this.playerCharacterMB);
+        string jsonSaveData = JsonUtility.ToJson(saveData);
+
+        long parentId = 0;
+        if (lastSave != null)
+        {
+            parentId = lastSave.id;
+        }
+
+        var save = saveRepository.NewSave(this.player.id, saveName, jsonSaveData, sceneId, isSystem, parentId);
+
+        if (cam != null)
+        {
+            string path = Application.streamingAssetsPath + "/" + Constants.saveScreenshotPath + "/" + save.name + ".PNG";
+            SaveScreenshot(path, cam);
+        }
+
+        lastSave = save;
+        SaveNpcCharactersForScene(save.id, sceneId);
+        return save;
+    }
+
+    public void LoadMostRecentDataForScene()
+    {
+        var saveRepository = new SaveRepository();
+    }
+
+    public void SaveScreenshot(string path, Camera cam)
     {
         int resHeight = Screen.height;
         int resWidth = Screen.width;
@@ -334,59 +505,48 @@ public class SaveController : MonoBehaviour
         RenderTexture.active = rt;
         screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
         cam.targetTexture = null;
-        RenderTexture.active = null;
+        RenderTexture.active = null; // JC: added to avoid errors
         Destroy(rt);
         byte[] bytes = screenShot.EncodeToPNG();
-        string filename = saveId + ".PNG";
-
-        string path = Application.streamingAssetsPath + "/" + Constants.saveScreenshotPath + "/" + filename;
-
         System.IO.File.WriteAllBytes(path, bytes);
-        Debug.Log(string.Format("Took screenshot to: {0}", filename));
-    }*/
-
-    public Save SaveGame(string saveName, long sceneId, Camera cam)
-    {
-        var saveRepository = new SaveRepository();
-        var characterSaveData = GenerateCharacterSaveData(this.playerCharacterMB);
-        var cameraSaveData = GenerateCameraSaveData();
-
-        var saveData = new PlayerSaveData(characterSaveData, cameraSaveData);
-
-        string jsonSaveData = JsonUtility.ToJson(saveData);
-
-        var save = saveRepository.NewSave(this.player.id, saveName, jsonSaveData, sceneId);
-        currentSave = save;
-
-        SaveNpcCharactersForScene(save.id, sceneId);
-        return save;
     }
 
-    private CameraSaveData GenerateCameraSaveData()
+    private CameraSaveData GenerateCameraSaveData(PlayerCharacterMB playerCharacterMB)
     {
-        var cameraAnchorTransformData = GenerateTransformSaveData(this.playerCharacterMB.camAnchor.transform);
-        var cameraTransformData = GenerateTransformSaveData(this.playerCharacterMB.cameraScript.cam.transform);
+        var cameraAnchorTransformData = GenerateTransformSaveData(playerCharacterMB.camAnchor.transform);
+        var cameraTransformData = GenerateTransformSaveData(playerCharacterMB.cameraScript.cam.transform);
 
-        var cameraRotationX = this.playerCharacterMB.cameraScript.rotationX;
-        var cameraRotationY = this.playerCharacterMB.cameraScript.rotationY;
-        var cameraDistance = this.playerCharacterMB.cameraScript.camZDistance;
+        var cameraRotationX = playerCharacterMB.cameraScript.rotationX;
+        var cameraRotationY = playerCharacterMB.cameraScript.rotationY;
+        var cameraDistance = playerCharacterMB.cameraScript.camZDistance;
 
-        CameraSaveData cameraSaveData = new CameraSaveData(cameraAnchorTransformData, cameraTransformData, cameraRotationX, cameraRotationY, cameraDistance);
+        CameraSaveData cameraSaveData = new CameraSaveData(new List<CameraSave>() { new CameraSave(cameraAnchorTransformData, cameraTransformData, cameraRotationX, cameraRotationY, cameraDistance) }.ToArray());
 
         return cameraSaveData;
     }
 
     private CharacterSaveData GenerateCharacterSaveData(CharacterMB characterMB)
     {
-        BuffSaveData buffSaveData = GenerateBuffSaveData(characterMB);
         TransformSaveData transformSaveData = GenerateTransformSaveData(characterMB.characterModelTransform);
-        ItemSaveData itemSaveData = GenerateItemSaveData(characterMB);
-        return new CharacterSaveData(characterMB.id, characterMB.guid, buffSaveData, transformSaveData, itemSaveData);
+        BuffSaveData buffSaveData = GenerateBuffSaveData(characterMB.statsController.GetBuffInstances());
+
+        ItemSaveData itemSaveData = null;
+        if (characterMB.inventory != null)
+        {
+            itemSaveData = GenerateItemSaveData(characterMB.inventory.GetItems());
+        }
+
+        AbilitySaveData abilitySaveData = null;
+        if (characterMB.abilityController != null)
+        {
+            abilitySaveData = GenerateAbilitySaveData(characterMB.abilityController.abilitiesList);
+        }
+
+        return new CharacterSaveData(characterMB.guid, buffSaveData, transformSaveData, itemSaveData, abilitySaveData);
     }
 
-    private BuffSaveData GenerateBuffSaveData(CharacterMB characterMB)
+    private BuffSaveData GenerateBuffSaveData(List<BuffInstance> buffInstances)
     {
-        var buffInstances = characterMB.statsController.GetBuffInstances();
 
         List<BuffSave> buffSaves = new List<BuffSave>();
         foreach(BuffInstance buffInstance in buffInstances)
@@ -409,35 +569,44 @@ public class SaveController : MonoBehaviour
         return buffSaveData;
     }
 
+    private AbilitySaveData GenerateAbilitySaveData(List<AbilityInstance> abilityInstances)
+    {
+        var abilitySaves = new List<AbilitySave>();
+
+        foreach (AbilityInstance abilityInstance in abilityInstances)
+        {
+            SaveTimer cooldownTimer = null;
+            if (abilityInstance.duration != null)
+            {
+                cooldownTimer = new SaveTimer(abilityInstance.duration.durationPassed, abilityInstance.cooldown.endTime);
+            }
+
+            SaveTimer durationTimer = null;
+            if (durationTimer != null)
+            {
+                durationTimer = new SaveTimer(abilityInstance.duration.durationPassed, abilityInstance.duration.endTime);
+            }
+            abilitySaves.Add(new AbilitySave(abilityInstance.ability.id, abilityInstance.isLoaded, cooldownTimer, durationTimer));
+        }
+
+        return new AbilitySaveData(abilitySaves.ToArray());
+    }
     private TransformSaveData GenerateTransformSaveData(Transform transform)
     {
-        TransformSaveData transformSaveData = new TransformSaveData();
         var rotation = transform.rotation;
-        transformSaveData.x = transform.position.x;
-        transformSaveData.y = transform.position.y;
-        transformSaveData.z = transform.position.z;
-        transformSaveData.rotationX = rotation.x;
-        transformSaveData.rotationY = rotation.y;
-        transformSaveData.rotationZ = rotation.z;
-        transformSaveData.rotationW = rotation.w;
+        TransformSaveData transformSaveData = new TransformSaveData(transform.position.x, transform.position.y, transform.position.z, rotation.x, rotation.y, rotation.z, rotation.w);
+
         return transformSaveData;
     }
 
-    private ItemSaveData GenerateItemSaveData(CharacterMB characterMB)
+    private ItemSaveData GenerateItemSaveData(List<ItemInstance> items)
     {
-        if (characterMB.inventory == null)
-        {
-            return null;
-        }
-
-        var inventory = characterMB.inventory.GetInventory();
-
         ItemSaveData itemSaveData = new ItemSaveData();
         var itemSaveList = new List<ItemSave>();
 
-        foreach (ItemCharacter itemCharacter in inventory)
+        foreach (ItemInstance itemInstance in items)
         {
-            itemSaveList.Add(new ItemSave(itemCharacter.item.id, itemCharacter.equiptSlotId, itemCharacter.quantity));
+            itemSaveList.Add(new ItemSave(itemInstance.item.id, itemInstance.equiptSlotId, itemInstance.quantity));
         }
 
         itemSaveData.itemSaves = itemSaveList.ToArray();
@@ -445,5 +614,59 @@ public class SaveController : MonoBehaviour
         return itemSaveData;
     }
 
+    private AbilityKeySaveData GenerateAbilityKeySaveData(Dictionary<KeybindsController.KeyType, Ability> abilityKeys)
+    {
+        List<AbilityKeySave> abilitySaves = new List<AbilityKeySave>();
+
+        foreach (var item in abilityKeys)
+        {
+            if (item.Value == null)
+            {
+                continue;
+            }
+
+            string key;
+            switch (item.Key) 
+            {
+                case KeybindsController.KeyType.ABILITY_1:
+                    key = "1";
+                    break;
+                case KeybindsController.KeyType.ABILITY_2:
+                    key = "2";
+                    break;
+                case KeybindsController.KeyType.ABILITY_3:
+                    key = "3";
+                    break;
+                case KeybindsController.KeyType.ABILITY_4:
+                    key = "4";
+                    break;
+                case KeybindsController.KeyType.ABILITY_5:
+                    key = "5";
+                    break;
+                case KeybindsController.KeyType.ABILITY_6:
+                    key = "6";
+                    break;
+                case KeybindsController.KeyType.ABILITY_7:
+                    key = "7";
+                    break;
+                case KeybindsController.KeyType.ABILITY_8:
+                    key = "8";
+                    break;
+                case KeybindsController.KeyType.ABILITY_9:
+                    key = "9";
+                    break;
+                case KeybindsController.KeyType.ABILITY_10:
+                    key = "10";
+                    break;
+                default:
+                    key = "0";
+                    break;
+            }
+            
+            abilitySaves.Add(new AbilityKeySave(key, item.Value.id));
+        }
+
+        return new AbilityKeySaveData(abilitySaves.ToArray());
+    }
 }
 

@@ -19,7 +19,7 @@ public class InventoryController : Inventory
 
     [System.NonSerialized] public bool allowDualWield = true;
     public enum InventorySlot {
-        NONE,
+        NONE = 0,
         WEAPON_R = 1,
         WEAPON_L = 2,
         HEAD = 3,
@@ -228,12 +228,19 @@ public class InventoryController : Inventory
     }
     public void CheckAbilityRequirements()
     {
-        List<Ability> abilitiesAvailable = abilityController.abilitiesAvailable;
+        List<AbilityInstance> abilitiesAvailable = abilityController.abilities.Values.ToList();
 
         //disable abilities if they cannot be used with weapon
-        foreach (Ability ability in abilitiesAvailable)
+        foreach (AbilityInstance abilityInstance in abilitiesAvailable)
         {
-            ability.CalculateRequirements(equiptItems);
+            if (abilityInstance.ability.CalculateRequirements(equiptItems))
+            {
+                abilityInstance.disabled = true;
+            }
+            else
+            {
+                abilityInstance.disabled = false;
+            }
         }
     }
 

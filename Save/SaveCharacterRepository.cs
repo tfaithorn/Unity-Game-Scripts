@@ -42,10 +42,11 @@ public class SaveCharacterRepository : DbRepository, IRepository<SaveCharacter>
         return orderBy;
     }
 
-    public List<SaveCharacter> LoadNpcCharactersForScene(long sceneId, long playerId)
+    public List<SaveCharacter> LoadNpcCharactersForSave(Save save)
     {
+        //TODO: Recursively find the most recent save for save tree. Do no worry about 
         var saveRepository = new SaveRepository();
-        var latestSaveId = saveRepository.GetLatestSaveIdForScene(sceneId, playerId);
+        var latestSaveId = saveRepository.GetLatestSaveIdForScene(save.sceneId, save.player.id);
 
         var criteria = new List<SqlClient.Expr>()
         {
@@ -77,7 +78,7 @@ public class SaveCharacterRepository : DbRepository, IRepository<SaveCharacter>
         {
             saveCharacters.Add(
                 new SaveCharacter(
-                    SaveDatabase.GetSave((long)row["saveId"]),
+                    SaveCache.GetSave((long)row["saveId"]),
                     new NpcCharacter((long)row["characterId"], (string)row["characterName"], (string)row["prefabPath"]),
                     (long)row["sceneId"],
                     (string)row["saveData"],
@@ -96,7 +97,7 @@ public class SaveCharacterRepository : DbRepository, IRepository<SaveCharacter>
         foreach (var row in result)
         {
             saveCharacters.Add(new SaveCharacter(
-                SaveDatabase.GetSave((long)row["saveId"]),
+                SaveCache.GetSave((long)row["saveId"]),
                 new NpcCharacter(
                         (long)row["characterId"],
                         (string)row["characterName"],
