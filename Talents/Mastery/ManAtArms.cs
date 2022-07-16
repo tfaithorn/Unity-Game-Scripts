@@ -8,7 +8,7 @@ public class ManAtArms : Mastery
     {
         this.id = 1;
         this.name = "Man at Arms";
-        this.previewImagePath = "Man At Arms";
+        this.previewImage = "Man At Arms";
         this.description = "This is the man at arms description";
     }
 }

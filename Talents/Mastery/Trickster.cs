@@ -8,5 +8,7 @@ public class Trickster : Mastery
     {
         this.id = 3;
         this.name = "Trickster";
+        this.description = "This is the trickster description.";
+        this.previewImage = "Trickster";
     }
 }

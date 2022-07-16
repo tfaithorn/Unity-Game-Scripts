@@ -8,7 +8,6 @@ using TMPro;
 public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public long masteryId;
-    public TextMeshProUGUI masteryDescription;
     public MasteryNewGamePanelController masteryNewGamePanelController;
     private Image image;
     public Mastery mastery;
@@ -23,8 +22,7 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         mastery = MasteryCache.GetMastery(masteryId);
         image = GetComponent<Image>();
-        var sprite = Resources.Load<Sprite>(Constants.masteryPreviewImagesPath + "/" + mastery.previewImagePath);
-        Debug.Log(Constants.masteryPreviewImagesPath + "/" + mastery.previewImagePath);
+        var sprite = Resources.Load<Sprite>(Constants.masteryPreviewImagesPath + "/" + mastery.previewImage);
         image.sprite = sprite;
     }
 
@@ -37,7 +35,7 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
             image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
         }
 
-        masteryDescription.text = mastery.description;
+        masteryNewGamePanelController.SetMasteryDescription(mastery);
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -46,6 +44,8 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
         {
             SetInactive();
         }
+
+        masteryNewGamePanelController.ClearMasteryDescription();
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)
@@ -56,7 +56,7 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
             masteryNewGamePanelController.RemoveMastery(mastery);
             SetInactive();
         }
-        else
+        else if (!masteryNewGamePanelController.CheckIfMasteryAtLimit())
         {
             masteryNewGamePanelController.SelectMastery(mastery);
             SetSelected();

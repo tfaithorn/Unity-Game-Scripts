@@ -11,6 +11,8 @@ public static class MasteryCache
         {
             { 1, new ManAtArms()},
             { 2, new MageApprentice()},
+            { 3, new Trickster()},
+            { 4, new Devotee()},
         };
     }
 

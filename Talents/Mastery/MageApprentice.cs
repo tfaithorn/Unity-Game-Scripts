@@ -8,7 +8,7 @@ public class MageApprentice : Mastery
     {
         this.id = 2;
         this.name = "Mage Apprentice";
-        this.previewImagePath = "Mage Apprentice";
+        this.previewImage = "Mage Apprentice";
         this.description = "This is the mage apprentice description";
     }
 }

@@ -6,7 +6,7 @@ public abstract class Mastery
 {
     public long id;
     public string name;
-    public string previewImagePath;
+    public string previewImage;
     public string description;
     protected List<TalentInstance> talentInstances;
 
