@@ -40,6 +40,7 @@ public class SaveRepository : DbRepository, IRepository<Save>
         return orderBy;
     }
 
+    /*
     public void OverrideSave(Save save)
     {
         var saveValues = new Dictionary<string, object>()
@@ -58,6 +59,7 @@ public class SaveRepository : DbRepository, IRepository<Save>
 
         Update(saveValues, criteria);
     }
+    */
 
     public Save GetSaveById(long id)
     {
@@ -91,38 +93,41 @@ public class SaveRepository : DbRepository, IRepository<Save>
         return GetByCriteria()[0];
     }
 
-    public long GetLatestSaveIdForScene(long sceneId, long playerId)
+    public long GetLastSaveIdForSceneData(Save save)
     {
-        //add recursive logic
-        var criteria = new List<SqlClient.Expr>()
+        var childCriteria = new List<SqlClient.Expr>()
         {
-            new SqlClient.Cond("playerId", playerId, SqlClient.OP_EQUAL),
-            new SqlClient.Cond("sceneId", sceneId, SqlClient.OP_EQUAL),
+            new SqlClient.Cond("save.id", save.id, SqlClient.OP_EQUAL)
+        };
+
+        var ancestorCriteria = new List<SqlClient.Expr>()
+        {
+            new SqlClient.Cond("condition", false, SqlClient.OP_EQUAL)
         };
 
         var sql = @"WITH ancestor AS (
-                      SELECT save.*, IIF(save.sceneId=3,true,false) AS condition
-                      FROM save 
-                      WHERE 
-                        save.id = 227 
+                      SELECT save.*, IIF(save.sceneId = {sceneId}, true, false) AS condition
+                      FROM save  
+                      {childCriteria}
                       UNION ALL
-                      SELECT save.*, IIF(save.sceneId=3,true,false) AS condition
+                      SELECT save.*, IIF(save.sceneId = {sceneId}, true, false) AS condition
                       FROM save
                       JOIN ancestor ON ancestor.parentId = save.id 
+                      {ancestorCriteria}
                     )
-                    SELECT * FROM ancestor";
-        /*
-        var sql = @"SELECT 
-                        * 
-                    FROM save 
-                    {criteria}
-                    ORDER BY 
-	                    createdAt DESC
+                    SELECT * 
+                    FROM ancestor 
+                    ORDER BY
+                        createdAt DESC 
                     LIMIT 1";
-        */
+
         var paramGroup = new SqlClient.ParamGroup();
-        var preparedWhere = SqlClient.PrepareWhere(criteria, paramGroup);
-        sql = SqlClient.ReplaceToken(sql, "criteria", preparedWhere);
+        var preparedChildWhere = SqlClient.PrepareWhere(childCriteria, paramGroup);
+        var preparedAncestorWhere = SqlClient.PrepareWhere(ancestorCriteria, paramGroup);
+
+        sql = SqlClient.ReplaceToken(sql, "childCriteria", preparedChildWhere);
+        sql = SqlClient.ReplaceToken(sql, "ancestorCriteria", preparedAncestorWhere);
+        sql = SqlClient.ReplaceToken(sql, "sceneId", save.sceneId);
 
         var result = SqlClient.Execute(sql, paramGroup);
 

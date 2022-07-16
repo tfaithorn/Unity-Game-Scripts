@@ -21,4 +21,9 @@ public static class SaveCache
     {
         return saves[saveId];
     }
+
+    public static void AddSave(Save save)
+    {
+        saves[save.id] = save;
+    }
 }

@@ -13,6 +13,7 @@ public static class Constants
     public static readonly string persistentScriptsTagName = "Persistent Scripts";
     public static readonly string sceneNodeTagName = "SceneNode";
     public static readonly string itemIconDirectory = "Item Icons";
+    public static readonly string masteryPreviewImagesPath = "Mastery Preview Images";
 }
 
 

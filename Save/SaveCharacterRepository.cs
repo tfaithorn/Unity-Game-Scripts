@@ -46,11 +46,11 @@ public class SaveCharacterRepository : DbRepository, IRepository<SaveCharacter>
     {
         //TODO: Recursively find the most recent save for save tree. Do no worry about 
         var saveRepository = new SaveRepository();
-        var latestSaveId = saveRepository.GetLatestSaveIdForScene(save.sceneId, save.player.id);
+        var lastSaveId = saveRepository.GetLastSaveIdForSceneData(save);
 
         var criteria = new List<SqlClient.Expr>()
         {
-            new SqlClient.Cond("save.id", latestSaveId, SqlClient.OP_EQUAL)
+            new SqlClient.Cond("save.id", lastSaveId, SqlClient.OP_EQUAL)
         };
 
         var sql = @"SELECT

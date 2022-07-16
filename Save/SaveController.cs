@@ -404,7 +404,9 @@ public class SaveController : MonoBehaviour
         SaveRepository saveRepository = new SaveRepository();
         save.saveData = JsonUtility.ToJson(GenerateCharacterSaveData(this.playerCharacterMB));
         save.sceneId = sceneId;
-        saveRepository.OverrideSave(save);
+
+        //TODO: instead of overriding, hide previous save and create a new one, because other saves may rely on this data
+        //saveRepository.OverrideSave(save);
 
         //update runtime data with new save details
         Save updatedSave = saveRepository.GetSaveById(save.id);
@@ -476,6 +478,7 @@ public class SaveController : MonoBehaviour
         }
 
         var save = saveRepository.NewSave(this.player.id, saveName, jsonSaveData, sceneId, isSystem, parentId);
+        SaveCache.AddSave(save);
 
         if (cam != null)
         {
@@ -483,16 +486,17 @@ public class SaveController : MonoBehaviour
             SaveScreenshot(path, cam);
         }
 
-        lastSave = save;
+         lastSave = save;
         SaveNpcCharactersForScene(save.id, sceneId);
         return save;
     }
 
+    /*
     public void LoadMostRecentDataForScene()
     {
         var saveRepository = new SaveRepository();
     }
-
+    */
     public void SaveScreenshot(string path, Camera cam)
     {
         int resHeight = Screen.height;
