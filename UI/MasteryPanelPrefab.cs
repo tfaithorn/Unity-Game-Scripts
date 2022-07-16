@@ -9,7 +9,8 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
 {
     public long masteryId;
     public MasteryNewGamePanelController masteryNewGamePanelController;
-    private Image image;
+    public Image backgroundImage;
+    public Image displayImage;
     public Mastery mastery;
     public State state;
     public enum State {
@@ -21,9 +22,8 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
     public void Awake()
     {
         mastery = MasteryCache.GetMastery(masteryId);
-        image = GetComponent<Image>();
         var sprite = Resources.Load<Sprite>(Constants.masteryPreviewImagesPath + "/" + mastery.previewImage);
-        image.sprite = sprite;
+        displayImage.sprite = sprite;
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -32,7 +32,7 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
         if (state != State.SELECTED)
         {
             state = State.HOVER;
-            image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+            displayImage.color = new Color(displayImage.color.r, displayImage.color.g, displayImage.color.b, 1f);
         }
 
         masteryNewGamePanelController.SetMasteryDescription(mastery);
@@ -53,12 +53,12 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
 
         if (masteryNewGamePanelController.CheckIfMasterySelected(mastery))
         {
-            masteryNewGamePanelController.RemoveMastery(mastery);
+            masteryNewGamePanelController.RemoveMastery(this);
             SetInactive();
         }
         else if (!masteryNewGamePanelController.CheckIfMasteryAtLimit())
         {
-            masteryNewGamePanelController.SelectMastery(mastery);
+            masteryNewGamePanelController.SelectMastery(this);
             SetSelected();
         }
     }
@@ -66,12 +66,12 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
     private void SetInactive()
     {
         state = State.INACTIVE;
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+        displayImage.color = new Color(displayImage.color.r, displayImage.color.g, displayImage.color.b, 0.5f);
     }
 
     private void SetSelected()
     {
         state = State.SELECTED;
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+        displayImage.color = new Color(displayImage.color.r, displayImage.color.g, displayImage.color.b, 1f);
     }
 }

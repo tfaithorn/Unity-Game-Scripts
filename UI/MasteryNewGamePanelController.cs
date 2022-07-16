@@ -5,7 +5,7 @@ using TMPro;
 
 public class MasteryNewGamePanelController : MonoBehaviour
 {
-    public List<MasteryPanelPrefab> masteryPanelPrefabs;
+    //public List<MasteryPanelPrefab> masteryPanelPrefabs;
     public TextMeshProUGUI masteryCountText;
     private List<Mastery> masteriesSelected;
     private int masteryLimit;
@@ -19,12 +19,13 @@ public class MasteryNewGamePanelController : MonoBehaviour
         masteryCountText.text = $@"({masteriesSelected.Count}/{masteryLimit}";
     }
 
-    public bool SelectMastery(Mastery mastery)
+    public bool SelectMastery(MasteryPanelPrefab masteryPanelPrefab)
     {
         if (masteriesSelected.Count < masteryLimit)
         {
-            masteriesSelected.Add(mastery);
+            masteriesSelected.Add(masteryPanelPrefab.mastery);
             UpdateCountText();
+            masteryPanelPrefab.backgroundImage.enabled = true;
             return true;
         }
         return false;
@@ -35,9 +36,10 @@ public class MasteryNewGamePanelController : MonoBehaviour
         return masteriesSelected.Exists(x => x == mastery);
     }
 
-    public void RemoveMastery(Mastery mastery)
+    public void RemoveMastery(MasteryPanelPrefab masteryPanelPrefab)
     {
-        masteriesSelected.Remove(mastery);
+        masteriesSelected.Remove(masteryPanelPrefab.mastery);
+        masteryPanelPrefab.backgroundImage.enabled = false;
         UpdateCountText();
     }
 

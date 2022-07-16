@@ -13,6 +13,7 @@ public static class MasteryCache
             { 2, new MageApprentice()},
             { 3, new Trickster()},
             { 4, new Devotee()},
+            { 5, new Ranger()},
         };
     }
 
