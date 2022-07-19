@@ -11,6 +11,8 @@ public abstract class Ability
     public List<AbilityTags> tags;
     public bool isAllowed;
 
+    public abstract string GetDescription(CharacterMB characterMB);
+
     public List<ItemWeapon.WeaponType> requiredWeaponTypes = new List<ItemWeapon.WeaponType>();
     public List<ItemWeapon.WeaponClass> requiredWeaponClasses = new List<ItemWeapon.WeaponClass>();
 

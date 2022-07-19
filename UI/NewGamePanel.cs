@@ -7,7 +7,8 @@ public class NewGamePanel : MonoBehaviour
 {
     public TMP_InputField nameField;
     private SceneController sceneController;
-    public PlayerCharacterMB playerCharacterMB;
+    //public PlayerCharacterMB playerCharacterMB;
+    public MasteryNewGamePanelController masteryNewGamePanelController;
 
     private void Awake()
     {
@@ -32,11 +33,19 @@ public class NewGamePanel : MonoBehaviour
         {
             new AbilityInstance(AbilityCache.GetAbility(1))
         };
+
+        List<MasteryInstance> masteryInstances = new List<MasteryInstance>();
+        int position = 1;
+        foreach (Mastery mastery in masteryNewGamePanelController.masteriesSelected)
+        {
+            masteryInstances.Add(new MasteryInstance(mastery, position));
+            position++;
+        }
         
         abilityInstances[0].isLoaded = true;
 
         Dictionary<KeybindsController.KeyType, Ability> abilityKeys = new Dictionary<KeybindsController.KeyType, Ability>();
         abilityKeys.Add(KeybindsController.KeyType.ABILITY_1, AbilityCache.GetAbility(1));
-        saveController.CreateNewPlayer(name, itemInstance, abilityInstances, abilityKeys);
+        saveController.CreateNewPlayer(name, itemInstance, abilityInstances, abilityKeys, masteryInstances);
     }
 }

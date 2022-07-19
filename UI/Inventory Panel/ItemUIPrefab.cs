@@ -29,7 +29,6 @@ public class ItemUIPrefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerEnter(PointerEventData eventData)
     {
         float xOffset = -3;
-
         float xPos = ((this.myRect.position.x * (1 / canvas.scaleFactor)) - (itemMouseOverTooltipController.panel.rect.width)) + xOffset;
         float yPos = (this.myRect.position.y * (1 / canvas.scaleFactor) + (itemMouseOverTooltipController.panel.rect.height / 2) - this.myRect.rect.height);
 

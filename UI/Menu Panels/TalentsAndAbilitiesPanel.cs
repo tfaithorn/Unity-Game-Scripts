@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class TalentsAndAbilitiesPanel : MenuPanel
 {
-    
+    public override void Deactivate()
+    {
+        
+    }
 }

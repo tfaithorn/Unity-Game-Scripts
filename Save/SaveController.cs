@@ -60,13 +60,38 @@ public class SaveController : MonoBehaviour
         public BuffSaveData buffSaveData;
         public ItemSaveData itemSaveData;
         public AbilitySaveData abilitySaveData;
-        public CharacterSaveData(string guid, BuffSaveData buffSaveData, TransformSaveData transformSaveData, ItemSaveData itemSaveData, AbilitySaveData abilitySaveData)
+        public MasterySaveData masterySaveData;
+        public CharacterSaveData(string guid, BuffSaveData buffSaveData, TransformSaveData transformSaveData, ItemSaveData itemSaveData, AbilitySaveData abilitySaveData, MasterySaveData masterySaveData)
         {
             this.guid = guid;
             this.buffSaveData = buffSaveData;
             this.transformSaveData = transformSaveData;
             this.itemSaveData = itemSaveData;
             this.abilitySaveData = abilitySaveData;
+            this.masterySaveData = masterySaveData;
+        }
+    }
+
+    [Serializable]
+    private class MasterySaveData
+    {
+        public MasterySave[] masterySaves;
+
+        public MasterySaveData(MasterySave[] masterySaves)
+        {
+            this.masterySaves = masterySaves;
+        }
+    }
+
+    [Serializable]
+    private class MasterySave
+    {
+        public long masteryId;
+        public int position;
+        public MasterySave(long masteryId, int position)
+        {
+            this.masteryId = masteryId;
+            this.position = position;
         }
     }
 
@@ -213,7 +238,7 @@ public class SaveController : MonoBehaviour
         charactersLoadedInScene = new List<Character>();
     }
 
-    public void CreateNewPlayer(string name, List<ItemInstance> inventory, List<AbilityInstance> abilities, Dictionary<KeybindsController.KeyType, Ability> abilityKeys)
+    public void CreateNewPlayer(string name, List<ItemInstance> inventory, List<AbilityInstance> abilities, Dictionary<KeybindsController.KeyType, Ability> abilityKeys, List<MasteryInstance> masteryInstances)
     {
         var playerRepository = new PlayerRepository();
         this.player = playerRepository.AddNewPlayer(name);
@@ -224,7 +249,8 @@ public class SaveController : MonoBehaviour
         TransformSaveData transformSaveData = new TransformSaveData(0,0,-10,0,0,0,0);
         AbilitySaveData abilitySaveData = GenerateAbilitySaveData(abilities);
         BuffSaveData buffSaveData = GenerateBuffSaveData(new List<BuffInstance>());
-        CharacterSaveData characterSaveData = new CharacterSaveData(Guid.NewGuid().ToString(), null, transformSaveData,itemSaveData, abilitySaveData);
+        MasterySaveData masterySaveData = GenerateMasterySaveData(masteryInstances);
+        CharacterSaveData characterSaveData = new CharacterSaveData(Guid.NewGuid().ToString(), null, transformSaveData,itemSaveData, abilitySaveData, masterySaveData);
         AbilityKeySaveData abilityKeySaveData = GenerateAbilityKeySaveData(abilityKeys);
         PlayerSaveData playerSaveData = new PlayerSaveData(characterSaveData, null, abilityKeySaveData);
 
@@ -296,6 +322,7 @@ public class SaveController : MonoBehaviour
 
         LoadCharacterItems(this.playerCharacterMB, saveData.characterSaveData.itemSaveData);
         LoadCharacterAbilities(this.playerCharacterMB, saveData.characterSaveData.abilitySaveData);
+        LoadCharacterMasteries(this.playerCharacterMB, saveData.characterSaveData.masterySaveData);
         LoadPlayerAbilityKeys(this.playerCharacterMB, saveData.abilityKeySaveData.abilityKeySaves);
 
         //Load characters in the scene that have data
@@ -364,6 +391,16 @@ public class SaveController : MonoBehaviour
             {
                 abilityController.LoadAbility(AbilityCache.GetAbility(abilitySave.abilityId));
             }
+        }
+    }
+
+    private void LoadCharacterMasteries(CharacterMB characterMB, MasterySaveData masterySaveData)
+    {
+        MasteryController masteryController = characterMB.GetComponent<MasteryController>();
+
+        foreach (MasterySave masterySave in masterySaveData.masterySaves)
+        {
+            masteryController.AddMastery(MasteryCache.GetMastery(masterySave.masteryId), masterySave.position);
         }
     }
 
@@ -491,12 +528,6 @@ public class SaveController : MonoBehaviour
         return save;
     }
 
-    /*
-    public void LoadMostRecentDataForScene()
-    {
-        var saveRepository = new SaveRepository();
-    }
-    */
     public void SaveScreenshot(string path, Camera cam)
     {
         int resHeight = Screen.height;
@@ -546,7 +577,13 @@ public class SaveController : MonoBehaviour
             abilitySaveData = GenerateAbilitySaveData(characterMB.abilityController.abilitiesList);
         }
 
-        return new CharacterSaveData(characterMB.guid, buffSaveData, transformSaveData, itemSaveData, abilitySaveData);
+        MasterySaveData masterySaveData = null;
+        if (characterMB.masteryController != null)
+        {
+            masterySaveData = GenerateMasterySaveData(characterMB.masteryController.GetMasteryInstances());
+        }
+
+        return new CharacterSaveData(characterMB.guid, buffSaveData, transformSaveData, itemSaveData, abilitySaveData, masterySaveData);
     }
 
     private BuffSaveData GenerateBuffSaveData(List<BuffInstance> buffInstances)
@@ -671,6 +708,17 @@ public class SaveController : MonoBehaviour
         }
 
         return new AbilityKeySaveData(abilitySaves.ToArray());
+    }
+
+    private MasterySaveData GenerateMasterySaveData(List<MasteryInstance> masteryInstances)
+    {
+        List<MasterySave> masterySaves = new List<MasterySave>();
+        foreach (MasteryInstance masteryInstance in masteryInstances)
+        {
+            masterySaves.Add(new MasterySave(masteryInstance.mastery.id, masteryInstance.position));
+        }
+
+        return new MasterySaveData(masterySaves.ToArray());
     }
 }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuPanel : MonoBehaviour
+public abstract class MenuPanel : MonoBehaviour
 {
     public enum Type
     {
@@ -13,4 +13,6 @@ public class MenuPanel : MonoBehaviour
         SAVELOAD = 4,
         SETTINGS = 5
     }
+
+    public abstract void Deactivate();
 }

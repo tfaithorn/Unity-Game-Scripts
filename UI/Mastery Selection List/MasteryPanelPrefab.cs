@@ -13,6 +13,7 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
     public Image displayImage;
     public Mastery mastery;
     public State state;
+    public TextMeshProUGUI masteryNameText;
     public enum State {
         HOVER,
         SELECTED,
@@ -24,6 +25,7 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
         mastery = MasteryCache.GetMastery(masteryId);
         var sprite = Resources.Load<Sprite>(Constants.masteryPreviewImagesPath + "/" + mastery.previewImage);
         displayImage.sprite = sprite;
+        masteryNameText.text = mastery.name;
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -34,8 +36,6 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
             state = State.HOVER;
             displayImage.color = new Color(displayImage.color.r, displayImage.color.g, displayImage.color.b, 1f);
         }
-
-        masteryNewGamePanelController.SetMasteryDescription(mastery);
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -44,8 +44,6 @@ public class MasteryPanelPrefab : MonoBehaviour, IPointerEnterHandler, IPointerE
         {
             SetInactive();
         }
-
-        masteryNewGamePanelController.ClearMasteryDescription();
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)

@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class TalentInstance
 {
-    Talent talent;
-    int rank;
-    int position;
+    public Talent talent;
+    public int rank;
 
-    public TalentInstance(Talent talent, int rank, int position)
+    public TalentInstance(Talent talent, int rank)
     {
         this.talent = talent;
-        this.position = position;
         this.rank = rank;
     }
 }

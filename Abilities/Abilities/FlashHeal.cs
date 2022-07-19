@@ -11,4 +11,9 @@ public class FlashHeal : Ability
         this.abilityScriptName = "FlashHealMB";
         this.icon = "flash-heal-icon";
     }
+
+    public override string GetDescription(CharacterMB characterMB)
+    {
+        return "This is the Flash Heal Description";
+    }
 }

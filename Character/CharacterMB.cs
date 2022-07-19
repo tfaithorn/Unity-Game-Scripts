@@ -14,11 +14,13 @@ public abstract class CharacterMB : MonoBehaviour
     public Animator animator;
     public StatsController statsController;
     public AbilityController abilityController;
+    public MasteryController masteryController;
 
     protected virtual void Awake()
     {
         statsController = GetComponent<StatsController>();
         abilityController = GetComponent<AbilityController>();
         inventory = GetComponent<Inventory>();
+        masteryController = GetComponent<MasteryController>();
     }
 }

@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class SaveLoadPanel : MenuPanel
 {
-    
+    public override void Deactivate()
+    {
+        
+    }
 }

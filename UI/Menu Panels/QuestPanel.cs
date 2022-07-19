@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class QuestPanel : MenuPanel
 {
-    
+    public override void Deactivate()
+    {
+        
+    }
 }

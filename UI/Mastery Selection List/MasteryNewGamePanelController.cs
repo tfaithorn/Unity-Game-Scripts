@@ -5,18 +5,17 @@ using TMPro;
 
 public class MasteryNewGamePanelController : MonoBehaviour
 {
-    //public List<MasteryPanelPrefab> masteryPanelPrefabs;
     public TextMeshProUGUI masteryCountText;
-    private List<Mastery> masteriesSelected;
+    public List<Mastery> masteriesSelected;
     private int masteryLimit;
-    public TextMeshProUGUI masteryTitleText;
-    public TextMeshProUGUI masteryDescriptionText;
+    public TextMeshProUGUI masteryCountLabelText;
+    public MasteryPreviewController masteryPreviewController;
 
     private void Awake()
     {
-        masteryLimit = 2;
+        masteryLimit = 1;
         this.masteriesSelected = new List<Mastery>();
-        masteryCountText.text = $@"({masteriesSelected.Count}/{masteryLimit}";
+        masteryCountText.text = $"( {masteriesSelected.Count} / {masteryLimit} ) ";
     }
 
     public bool SelectMastery(MasteryPanelPrefab masteryPanelPrefab)
@@ -48,12 +47,6 @@ public class MasteryNewGamePanelController : MonoBehaviour
         masteryCountText.text = $@"( {masteriesSelected.Count} / {masteryLimit} )";
     }
 
-    public void SetMasteryDescription(Mastery mastery)
-    {
-        masteryTitleText.text = mastery.name;
-        masteryDescriptionText.text = mastery.description;
-    }
-
     public bool CheckIfMasteryAtLimit()
     {
         if (masteriesSelected.Count == masteryLimit)
@@ -66,9 +59,9 @@ public class MasteryNewGamePanelController : MonoBehaviour
         }
     }
 
-    public void ClearMasteryDescription()
+    public void ShowTalentPreview(int masteryId)
     {
-        masteryTitleText.text = "";
-        masteryDescriptionText.text = "";
+        masteryPreviewController.gameObject.SetActive(true);
+        masteryPreviewController.SetMastery((long)masteryId, null);
     }
 }

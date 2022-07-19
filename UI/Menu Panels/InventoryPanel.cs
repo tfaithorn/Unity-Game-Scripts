@@ -39,6 +39,11 @@ public class InventoryPanel : MenuPanel
         ClearItemList();
         GetInventoryList(0);
     }
+    public override void Deactivate()
+    {
+        this.itemContextMenu.gameObject.SetActive(false);
+        this.itemMouseOverTooltipController.Deactivate();
+    }
 
     /// <summary>
     /// Removes item prefabs from list. It should really be using pooling instead of deleting and instantiating them, 
@@ -84,6 +89,5 @@ public class InventoryPanel : MenuPanel
         healthSlider.value = healthRatio;
 
         energySlider.value = energyRatio;
-
     }
 }

@@ -159,7 +159,7 @@ public class MenuController : MonoBehaviour
 
                     break;
                 case MenuPanel.Type.INVENTORY:
-
+                    inventoryPanel.Deactivate();
                     break;
                 case MenuPanel.Type.TALENTSABILITIES:
 
