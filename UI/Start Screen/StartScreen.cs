@@ -8,19 +8,24 @@ public class StartScreen : MonoBehaviour
     public SceneController sceneController;
     public SavePanelController savePanelController;
     public State state;
-    public RectTransform settingsPanel;
-    public RectTransform loadPanel;
-    public RectTransform newGameGroup;
+    public StartScreenMenuPanel startMenuPanel;
+    public StartScreenMenuPanel settingsPanel;
+    public StartScreenMenuPanel loadPanel;
+    public StartScreenMenuPanel newGamePanel;
+    public StartScreenMenuPanel blackBackground;
+    private StartScreenMenuPanel currentScreenMenuPanel;
     public LoadingScreen loadingScreen;
-    List<RectTransform> menuPanels;
-
+    List<StartScreenMenuPanel> menuPanels;
+    public Camera cam;
+    public Transform mainCameraAnchor;
+    public Transform characterCreationCameraAnchor;
 
     private void Awake()
     {
-        menuPanels = new List<RectTransform>() {
+        menuPanels = new List<StartScreenMenuPanel>() {
             loadPanel,
             settingsPanel,
-            newGameGroup
+            newGamePanel
         };
 
         loadingScreen.Init();
@@ -31,25 +36,34 @@ public class StartScreen : MonoBehaviour
         loadingScreen.Finish();
     }
 
-    public enum State { 
+    public enum State
+    {
         NONE,
         NEW_GAME,
         LOAD_GAME,
         SETTINGS
     }
 
+    public void Continue()
+    {
+        //TODO: Update to be real
+        NewGame();
+    }
+
     public void NewGame()
     {
         if (state != State.NEW_GAME)
         {
-            DeactivateOtherPanels(newGameGroup);
-            newGameGroup.gameObject.SetActive(true);
+            DeactivateOtherPanels(newGamePanel);
             state = State.NEW_GAME;
+            currentScreenMenuPanel = newGamePanel;
+            StartCoroutine(NewGameTransition());
+
         }
         else
         {
             state = State.NONE;
-            newGameGroup.gameObject.SetActive(false);
+            newGamePanel.gameObject.SetActive(false);
         }
     }
 
@@ -84,13 +98,13 @@ public class StartScreen : MonoBehaviour
         }
     }
 
-    private void DeactivateOtherPanels(RectTransform currRect)
+    private void DeactivateOtherPanels(StartScreenMenuPanel currPanel)
     {
-        foreach (RectTransform rect in menuPanels)
+        foreach (StartScreenMenuPanel menuPanel in menuPanels)
         {
-            if (rect != currRect)
+            if (menuPanel != currPanel)
             {
-                rect.gameObject.SetActive(false);
+                menuPanel.gameObject.SetActive(false);
             }
         }
     }
@@ -98,5 +112,75 @@ public class StartScreen : MonoBehaviour
     public void Exit()
     {
         Application.Quit();
+    }
+
+    private IEnumerator NewGameTransition()
+    {
+        StartCoroutine(FadeOutCanvas(startMenuPanel.canvasGroup, 0.2f));
+        blackBackground.gameObject.SetActive(true);
+        yield return StartCoroutine(FadeInCanvas(blackBackground.canvasGroup, 0.5f));
+        PlaceCameraAtTransform(characterCreationCameraAnchor);
+        yield return new WaitForSeconds(0.2f);
+        newGamePanel.gameObject.SetActive(true);
+        StartCoroutine(FadeInCanvas(newGamePanel.canvasGroup, 0.1f));
+        yield return StartCoroutine(FadeOutCanvas(blackBackground.canvasGroup, 0.2f));
+        blackBackground.gameObject.SetActive(false);
+    }
+
+    public void ReturnToStartMenu()
+    {
+        StartCoroutine(StartMenuTransition());
+    }
+
+    private IEnumerator StartMenuTransition()
+    {
+        StartCoroutine(FadeOutCanvas(currentScreenMenuPanel.canvasGroup, 0.2f));
+        blackBackground.gameObject.SetActive(true);
+        yield return StartCoroutine(FadeInCanvas(blackBackground.canvasGroup, 0.5f));
+        PlaceCameraAtTransform(mainCameraAnchor);
+        currentScreenMenuPanel.gameObject.SetActive(false);
+        state = State.NONE;
+        yield return new WaitForSeconds(0.2f);
+        startMenuPanel.gameObject.SetActive(true);
+        StartCoroutine(FadeInCanvas(startMenuPanel.canvasGroup, 0.1f));
+        yield return StartCoroutine(FadeOutCanvas(blackBackground.canvasGroup, 0.2f));
+        blackBackground.gameObject.SetActive(false);
+    }
+
+    private void PlaceCameraAtTransform(Transform transform)
+    {
+        cam.transform.position = transform.position;
+        cam.transform.rotation = transform.rotation;
+    }
+
+    public IEnumerator FadeInCanvas(CanvasGroup canvasGroup, float endTime)
+    {
+        float t = 0;
+        canvasGroup.alpha = 0;
+
+        while (t < endTime)
+        {
+            t += Time.deltaTime;
+            canvasGroup.alpha = t / endTime;
+
+            yield return null;
+        }
+
+        canvasGroup.alpha = 1f;
+    }
+
+    public IEnumerator FadeOutCanvas(CanvasGroup canvasGroup, float endTime)
+    {
+        float t = 0;
+
+        while (t < endTime)
+        {
+            t += Time.deltaTime;
+            canvasGroup.alpha = (endTime - t) / endTime;
+
+            yield return null;
+        }
+
+        canvasGroup.alpha = 0f;
     }
 }

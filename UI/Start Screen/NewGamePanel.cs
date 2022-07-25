@@ -35,6 +35,7 @@ public class NewGamePanel : MonoBehaviour
         };
 
         List<MasteryInstance> masteryInstances = new List<MasteryInstance>();
+        
         int position = 1;
         foreach (Mastery mastery in masteryNewGamePanelController.masteriesSelected)
         {
@@ -47,5 +48,16 @@ public class NewGamePanel : MonoBehaviour
         Dictionary<KeybindsController.KeyType, Ability> abilityKeys = new Dictionary<KeybindsController.KeyType, Ability>();
         abilityKeys.Add(KeybindsController.KeyType.ABILITY_1, AbilityCache.GetAbility(1));
         saveController.CreateNewPlayer(name, itemInstance, abilityInstances, abilityKeys, masteryInstances);
+    }
+
+    public IEnumerator FadeRectTransform(RectTransform rectTransform, float endTime)
+    {
+        float t = 0;
+
+        while (t < endTime)
+        {
+            t += Time.deltaTime;
+            yield return null;
+        }
     }
 }

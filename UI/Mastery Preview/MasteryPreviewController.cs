@@ -13,6 +13,7 @@ public class MasteryPreviewController : MonoBehaviour
     public TextMeshProUGUI masteryDescription;
     public TextMeshProUGUI masteryNameText;
     public RectTransform talentPreviewContainer;
+    public RectTransform background;
     private string masteryTalentPreviewPath = "Prefabs/UI Prefabs/Mastery Previews";
 
     private void Awake()
@@ -20,6 +21,14 @@ public class MasteryPreviewController : MonoBehaviour
         if (masteryId != 0)
         {
             //SetMastery(masteryId);
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (background != null)
+        {
+            background.gameObject.SetActive(true);
         }
     }
 
@@ -46,7 +55,11 @@ public class MasteryPreviewController : MonoBehaviour
 
     public void HidePreviewController()
     {
-        Debug.Log("Hiding Preview");
+        if (background != null)
+        {
+            background.gameObject.SetActive(false);
+        }
+
         this.gameObject.SetActive(false);
     }
 }

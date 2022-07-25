@@ -14,6 +14,11 @@ public class TalentPreviewSection : MonoBehaviour
 
     public void SetTalents(CharacterMB characterMB)
     {
+        if (characterMB == null)
+        {
+            return;
+        }
+
         foreach (TalentRow talentRow in talentRows)
         {
             talentRow.SetTalents(characterMB);
