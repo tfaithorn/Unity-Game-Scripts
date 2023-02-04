@@ -1,5 +1,5 @@
 # Unity Game Engine Scripts
-This is a collection of scripts for the Unity Game Engine.
+These are a collection of scripts for the Unity Game Engine.
 It includes scripts for:
 1. Controlling animations
 2. Character Stats
